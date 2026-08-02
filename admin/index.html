@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>لوحة تحكم إيدولينك — EduLink Admin</title>
+  <style>
+    :root{
+      --bg:#0f1115; --panel:#171a21; --panel-2:#1e222b; --line:#2a2f3a;
+      --txt:#e7eaf0; --muted:#9aa3b2; --brand:#4f8cff; --brand-2:#3a6fd8;
+      --ok:#2ecc71; --warn:#f1c40f; --err:#e74c3c; --chip:#232833;
+      --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%}
+    body{
+      background:var(--bg); color:var(--txt);
+      font-family:"Segoe UI",Tahoma,system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+      font-size:15px; line-height:1.6;
+    }
+    a{color:var(--brand);text-decoration:none}
+    button{font-family:inherit}
+    .hidden{display:none !important}
+
+    /* ---------- Login ---------- */
+    #login{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{
+      background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+      box-shadow:var(--shadow);padding:26px;width:100%;max-width:420px
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;margin-bottom:6px}
+    .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--brand);box-shadow:0 0 14px var(--brand)}
+    .sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+    label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
+    input,select,textarea{
+      width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--txt);
+      border-radius:10px;padding:10px 12px;font-size:14px;outline:none
+    }
+    input:focus,select:focus,textarea:focus{border-color:var(--brand)}
+    textarea{min-height:90px;resize:vertical;font-family:inherit}
+    .btn{
+      background:var(--brand);color:#fff;border:none;border-radius:10px;
+      padding:11px 16px;font-weight:700;cursor:pointer;font-size:14px;transition:.15s
+    }
+    .btn:hover{background:var(--brand-2)}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
+    .btn.ghost:hover{border-color:var(--brand)}
+    .btn.danger{background:var(--err)}
+    .btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .msg{margin-top:14px;font-size:13px;padding:10px 12px;border-radius:10px;display:none}
+    .msg.err{display:block;background:rgba(231,76,60,.12);color:#ff9b90;border:1px solid rgba(231,76,60,.35)}
+    .msg.ok{display:block;background:rgba(46,204,113,.12);color:#8ff0bd;border:1px solid rgba(46,204,113,.35)}
+
+    /* ---------- App layout ---------- */
+    #app{display:grid;grid-template-columns:260px 1fr;min-height:100%}
+    aside{
+      background:var(--panel);border-inline-start:1px solid var(--line);
+      display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:auto
+    }
+    .side-head{padding:18px 18px 10px}
+    .side-nav{padding:6px;flex:1;overflow:auto}
+    .nav-group{color:var(--muted);font-size:11px;letter-spacing:.5px;padding:14px 12px 6px;text-transform:uppercase}
+    .nav-item{
+      display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;
+      cursor:pointer;color:var(--txt);font-size:14px;user-select:none
+    }
+    .nav-item:hover{background:var(--panel-2)}
+    .nav-item.active{background:var(--chip);color:#fff;font-weight:700}
+    .nav-item .ic{width:22px;text-align:center}
+    .nav-item .count{margin-inline-start:auto;background:var(--panel-2);color:var(--muted);border-radius:20px;padding:0 8px;font-size:12px}
+    .side-foot{padding:12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+
+    main{padding:22px 26px;overflow:auto;max-width:100%}
+    .top{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+    .top h1{font-size:22px;margin:0}
+    .top .spacer{flex:1}
+    .search{max-width:280px}
+
+    .stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-bottom:22px}
+    .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+    .stat .k{color:var(--muted);font-size:13px}
+    .stat .v{font-size:28px;font-weight:800;margin-top:6px}
+    .stat .v small{font-size:14px;color:var(--muted);font-weight:500}
+
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+    .panel h3{margin:0;padding:14px 16px;border-bottom:1px solid var(--line);font-size:15px}
+
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{text-align:start;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+    th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0;background:var(--panel)}
+    tr:hover td{background:rgba(255,255,255,.02)}
+    .table-wrap{overflow-x:auto}
+    .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+    .badge.on{background:rgba(46,204,113,.15);color:#8ff0bd}
+    .badge.off{background:rgba(231,76,60,.15);color:#ff9b90}
+    .badge.neutral{background:var(--chip);color:var(--muted)}
+    .badge.info{background:rgba(79,140,255,.15);color:#a9c6ff}
+    .badge.warn{background:rgba(241,196,15,.15);color:#ffe08a}
+    .thumb{width:42px;height:42px;border-radius:8px;object-fit:cover;background:var(--panel-2);border:1px solid var(--line)}
+    .cell-actions{display:flex;gap:6px;white-space:nowrap}
+    .muted{color:var(--muted)}
+    .empty{padding:40px;text-align:center;color:var(--muted)}
+    .pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:12px 16px;color:var(--muted);font-size:13px}
+
+    /* ---------- Modal ---------- */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-start;justify-content:center;padding:30px 16px;z-index:50;overflow:auto}
+    .modal{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);width:100%;max-width:720px;box-shadow:var(--shadow);margin:auto}
+    .modal-head{display:flex;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}
+    .modal-head h3{margin:0;font-size:17px}
+    .modal-head .x{margin-inline-start:auto;cursor:pointer;color:var(--muted);font-size:22px;line-height:1;background:none;border:none}
+    .modal-body{padding:18px;max-height:70vh;overflow:auto}
+    .modal-foot{display:flex;gap:10px;justify-content:flex-end;padding:14px 18px;border-top:1px solid var(--line)}
+    .field{margin-bottom:14px}
+    .field .hint{font-size:12px;color:var(--muted);margin-top:4px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media(max-width:620px){.grid2{grid-template-columns:1fr}}
+
+    /* i18n editor */
+    .i18n{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+    .i18n-tabs{display:flex;gap:2px;background:var(--panel-2);flex-wrap:wrap}
+    .i18n-tab{padding:7px 12px;cursor:pointer;font-size:13px;color:var(--muted);border-bottom:2px solid transparent}
+    .i18n-tab.active{color:#fff;border-bottom-color:var(--brand)}
+    .i18n-pane{padding:10px}
+    .chk{display:flex;align-items:center;gap:9px}
+    .chk input{width:auto}
+
+    /* toast */
+    #toast{position:fixed;inset-block-end:22px;inset-inline-start:22px;z-index:99;display:flex;flex-direction:column;gap:8px}
+    .toast{background:var(--panel-2);border:1px solid var(--line);border-inline-start:3px solid var(--brand);border-radius:10px;padding:12px 16px;box-shadow:var(--shadow);font-size:14px;min-width:220px}
+    .toast.ok{border-inline-start-color:var(--ok)}
+    .toast.err{border-inline-start-color:var(--err)}
+
+    @media(max-width:860px){
+      #app{grid-template-columns:1fr}
+      aside{position:fixed;inset-inline-start:0;top:0;width:270px;z-index:40;transform:translateX(100%);transition:.2s}
+      html[dir=rtl] aside{transform:translateX(100%)}
+      aside.open{transform:translateX(0)}
+      .menu-btn{display:inline-flex !important}
+    }
+    .menu-btn{display:none;align-items:center}
+  </style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<section id="login">
+  <div class="card">
+    <div class="brand"><span class="dot"></span> لوحة تحكم إيدولينك</div>
+    <div class="sub">تحكّم كامل في المعاهد، الطلبات، الشركاء، المحتوى والإعدادات.</div>
+
+    <label>رابط مشروع Supabase</label>
+    <input id="in-url" placeholder="https://xxxx.supabase.co" autocomplete="off" />
+
+    <label>مفتاح anon العام (anon public key)</label>
+    <input id="in-key" placeholder="eyJ..." autocomplete="off" />
+
+    <label>البريد الإلكتروني</label>
+    <input id="in-email" type="email" placeholder="admin@example.com" autocomplete="username" />
+
+    <label>كلمة المرور</label>
+    <input id="in-pass" type="password" placeholder="••••••••" autocomplete="current-password" />
+
+    <div style="margin-top:18px" class="row">
+      <button class="btn" id="btn-login" style="flex:1">تسجيل الدخول</button>
+    </div>
+    <div class="msg" id="login-msg"></div>
+    <div class="sub" style="margin-top:16px">
+      المفتاح المستخدم هو <b>anon</b> العام (آمن للمتصفح). الصلاحيات تُمنح عبر
+      <code>row level security</code> لحسابك المُرقّى كمدير — نفّذ ملف
+      <code>٨- سياسات لوحة التحكم.sql</code> أولاً.
+    </div>
+  </div>
+</section>
+
+<!-- ================= APP ================= -->
+<section id="app" class="hidden">
+  <aside id="aside">
+    <div class="side-head">
+      <div class="brand"><span class="dot"></span> إيدولينك</div>
+      <div class="sub" id="who">—</div>
+    </div>
+    <nav class="side-nav" id="nav"></nav>
+    <div class="side-foot">
+      <div id="conn" class="muted">متصل</div>
+      <button class="btn ghost sm" style="margin-top:8px;width:100%" id="btn-logout">تسجيل الخروج</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <button class="btn ghost sm menu-btn" id="btn-menu">☰</button>
+      <h1 id="view-title">لوحة القيادة</h1>
+      <div class="spacer"></div>
+      <input class="search hidden" id="search" placeholder="بحث…" />
+      <button class="btn hidden" id="btn-new">+ إضافة</button>
+      <button class="btn ghost sm" id="btn-refresh">↻ تحديث</button>
+    </div>
+    <div id="view"></div>
+  </main>
+</section>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="./schema.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
