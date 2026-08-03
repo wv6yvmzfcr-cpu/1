@@ -13,6 +13,7 @@
 | `seo-generate` | **مدير فقط** | `is_admin()` | anon ثم service_role |
 | `doc-review` | **مدير فقط** ⭐ أُصلح | `requireAdmin()` | service_role بعد التحقق |
 | `partner-deliver` | **مدير أو أتمتة داخلية** ⭐ أُصلح | `requireAdminOrService()` | service_role بعد التحقق |
+| `push-broadcast` | **مدير فقط** 🆕 | `requireAdmin()` | service_role بعد التحقق |
 
 ⭐ = كانت **بلا أي تحقق** قبل الإصلاح.
 
@@ -42,6 +43,9 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.photo-passport]
+verify_jwt = true
+
+[functions.push-broadcast]
 verify_jwt = true
 ```
 

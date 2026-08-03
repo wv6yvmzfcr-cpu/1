@@ -357,6 +357,26 @@ comment on column public.currencies.rate_updated_at is
 
 
 -- =====================================================================
+-- ٨) صلاحية المدير على مخزن الوسائط العام (رفع صور المعاهد/الإعلانات
+--    مباشرةً من لوحة التحكم). القراءة عامة أصلاً؛ نضيف الرفع/التعديل/الحذف.
+-- =====================================================================
+insert into storage.buckets (id, name, public) values ('media','media',true)
+on conflict (id) do nothing;
+
+drop policy if exists "admin upload media" on storage.objects;
+create policy "admin upload media" on storage.objects for insert
+  with check (bucket_id = 'media' and public.is_admin());
+
+drop policy if exists "admin update media" on storage.objects;
+create policy "admin update media" on storage.objects for update
+  using (bucket_id = 'media' and public.is_admin());
+
+drop policy if exists "admin delete media" on storage.objects;
+create policy "admin delete media" on storage.objects for delete
+  using (bucket_id = 'media' and public.is_admin());
+
+
+-- =====================================================================
 -- ⭐ ترقية أول مدير (نفّذه يدوياً مرة واحدة — استبدل البريد)
 -- =====================================================================
 -- insert into public.admin_users (user_id)

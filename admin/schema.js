@@ -22,6 +22,9 @@ const RESOURCES = {
   /* ------------------------- لوحة القيادة ------------------------- */
   dashboard: { label: 'لوحة القيادة', icon: '📊', group: 'عام', custom: 'dashboard' },
 
+  /* ------------------------- إرسال إشعار ------------------------- */
+  notifications: { label: 'إرسال إشعار', icon: '🔔', group: 'العمليات', custom: 'notifications' },
+
   /* --------------------------- المعاهد --------------------------- */
   institutes: {
     label: 'المعاهد', icon: '🏫', group: 'المحتوى', order: 'sort_order',
@@ -47,7 +50,7 @@ const RESOURCES = {
       f('min_weeks', 'number', { half: true, default: 4 }),
       f('max_weeks', 'number', { half: true, default: 48 }),
       f('tags', 'i18n_list', { hint: 'مميزات المعهد مترجمة' }),
-      f('images', 'string_array', { hint: 'روابط صور عامة (Supabase Storage)' }),
+      f('images', 'string_array', { upload: true, hint: 'ارفع صوراً أو الصق روابط عامة' }),
       f('whatsapp', 'text', { hint: 'صيغة دولية: 60123456789' }),
       f('location_lat', 'number', { half: true }),
       f('location_lng', 'number', { half: true }),
@@ -78,7 +81,7 @@ const RESOURCES = {
       f('city', 'i18n'),
       f('price_myr', 'number', { required: true }),
       f('features', 'i18n_list'),
-      f('images', 'string_array'),
+      f('images', 'string_array', { upload: true }),
       f('whatsapp', 'text', { required: true }),
       f('is_featured', 'bool', { half: true }),
       f('is_active', 'bool', { half: true, default: true }),

@@ -156,8 +156,10 @@ function go(resource) {
   $('#view-title').textContent = r.label;
   const showList = !r.custom || r.custom === 'applications';
   $('#search').classList.toggle('hidden', !showList);
+  $('#btn-export').classList.toggle('hidden', !showList);
   $('#btn-new').classList.toggle('hidden', !showList || r.readOnly || r.canCreate === false);
   if (r.custom === 'dashboard') renderDashboard();
+  else if (r.custom === 'notifications') renderNotifications();
   else loadList();
 }
 
@@ -375,7 +377,7 @@ function renderField(field, value, isEdit) {
   const t = field.type;
   if (t === 'i18n') return renderI18n(value, field.textarea);
   if (t === 'i18n_list') return renderI18nList(value);
-  if (t === 'string_array') return renderStringArray(value);
+  if (t === 'string_array') return renderStringArray(value, field);
   if (t === 'json') return renderJson(value, field.big);
   if (t === 'bool') return renderBool(value, field.name);
   if (t === 'select') return renderSelect(field, value);
@@ -458,10 +460,35 @@ function renderI18nList(value) {
   return { node: box, get: () => { const out = rowGetters.map(g => g.read()).filter(Boolean); return out; } };
 }
 
-function renderStringArray(value) {
+function renderStringArray(value, field) {
   const ta = el('textarea', { value: Array.isArray(value) ? value.join('\n') : (value || '') });
   ta.placeholder = 'عنصر واحد في كل سطر';
-  return { node: ta, get: () => ta.value.split('\n').map(s => s.trim()).filter(Boolean) };
+  const box = el('div', {}, ta);
+  if (field?.upload) {
+    const fileInput = el('input', { type: 'file', accept: 'image/*', multiple: '', style: 'display:none' });
+    const btn = el('button', { class: 'btn ghost sm', type: 'button', style: 'margin-top:6px', text: '⤒ رفع صور', onclick: () => fileInput.click() });
+    const status = el('span', { class: 'hint', style: 'margin-inline-start:8px' });
+    fileInput.addEventListener('change', async () => {
+      const files = Array.from(fileInput.files || []);
+      if (!files.length) return;
+      btn.disabled = true;
+      let done = 0;
+      for (const file of files) {
+        status.textContent = `جارٍ الرفع ${++done}/${files.length}…`;
+        const safe = file.name.replace(/[^\w.\-]+/g, '_');
+        const path = `${state.resource}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${safe}`;
+        const { error } = await state.sb.storage.from('media').upload(path, file, { contentType: file.type, upsert: false });
+        if (error) { toast('تعذّر رفع ' + file.name + ': ' + error.message, 'err'); continue; }
+        const { data } = state.sb.storage.from('media').getPublicUrl(path);
+        ta.value = (ta.value.trim() ? ta.value.trim() + '\n' : '') + data.publicUrl;
+      }
+      status.textContent = 'تم ✓';
+      btn.disabled = false;
+      fileInput.value = '';
+    });
+    box.append(el('div', {}, [btn, status, fileInput]));
+  }
+  return { node: box, get: () => ta.value.split('\n').map(s => s.trim()).filter(Boolean) };
 }
 
 function renderJson(value, big) {
@@ -724,11 +751,84 @@ async function renderDashboard() {
   }
 }
 
+/* ---------- CSV export ---------- */
+async function exportCsv() {
+  const r = RESOURCES[state.resource];
+  if (!r || r.custom) return;
+  const pk = r.pk || 'id';
+  const ord = r.order || pk;
+  let q = state.sb.from(state.resource).select('*').limit(5000);
+  q = ord.startsWith('-') ? q.order(ord.slice(1), { ascending: false }) : q.order(ord, { ascending: true });
+  const { data, error } = await q;
+  if (error) return toast('تعذّر التصدير: ' + error.message, 'err');
+  const rows = data || [];
+  if (!rows.length) return toast('لا بيانات للتصدير', 'err');
+
+  const keys = (r.columns || []).length ? r.columns.map(c => c.key) : Object.keys(rows[0]);
+  const val = (k, row) => {
+    const v = row[k];
+    if (v === null || v === undefined) return '';
+    if (Array.isArray(v)) return v.map(x => (x && typeof x === 'object') ? pick(x) : x).join(' | ');
+    if (typeof v === 'object') return pick(v) || JSON.stringify(v);
+    return String(v);
+  };
+  const cell = s => { s = String(s).replace(/"/g, '""'); return /[",\n]/.test(s) ? `"${s}"` : s; };
+  const csv = '﻿' + keys.join(',') + '\n' +
+    rows.map(row => keys.map(k => cell(val(k, row))).join(',')).join('\n');
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  const a = el('a', { href: url, download: `${state.resource}-${new Date().toISOString().slice(0, 10)}.csv` });
+  document.body.append(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  toast(`صُدّر ${rows.length} صفاً`, 'ok');
+}
+
+/* ---------- notifications (Expo Push broadcast) ---------- */
+async function renderNotifications() {
+  const view = $('#view');
+  view.innerHTML = '<div class="empty">جارٍ التحميل…</div>';
+  const { count } = await state.sb.from('push_tokens').select('*', { count: 'exact', head: true });
+
+  view.innerHTML = '';
+  const inner = el('div', { style: 'padding:18px;max-width:560px' });
+  inner.append(el('div', { class: 'muted', style: 'margin-bottom:14px', text: `عدد الأجهزة المسجّلة: ${count ?? 0}` }));
+
+  const langSel = el('select', {});
+  langSel.append(el('option', { value: '', text: 'كل اللغات' }));
+  ['ar', 'en', 'ms', 'ru'].forEach(l => langSel.append(el('option', { value: l, text: l })));
+  const title = el('input', { type: 'text', placeholder: 'عنوان الإشعار' });
+  const bodyI = el('textarea', { placeholder: 'نص الإشعار' });
+
+  inner.append(el('label', { text: 'اللغة المستهدفة' }), langSel);
+  inner.append(el('label', { text: 'العنوان' }), title);
+  inner.append(el('label', { text: 'النص' }), bodyI);
+
+  const send = el('button', {
+    class: 'btn', style: 'margin-top:16px', text: 'إرسال الآن',
+    onclick: async () => {
+      if (!title.value.trim() || !bodyI.value.trim()) return toast('أدخل العنوان والنص', 'err');
+      if (!confirm(`إرسال الإشعار إلى ${langSel.value || 'كل'} الأجهزة؟`)) return;
+      send.disabled = true; send.textContent = 'جارٍ الإرسال…';
+      const { data, error } = await state.sb.functions.invoke('push-broadcast', {
+        body: { title: title.value.trim(), body: bodyI.value.trim(), lang: langSel.value || null },
+      });
+      send.disabled = false; send.textContent = 'إرسال الآن';
+      if (error) return toast('فشل الإرسال: ' + error.message, 'err');
+      toast(`أُرسل: ${data?.sent ?? 0} — فشل: ${data?.failed ?? 0}`, data?.sent ? 'ok' : 'err');
+      title.value = ''; bodyI.value = '';
+    },
+  });
+  inner.append(send);
+  inner.append(el('div', { class: 'hint', style: 'margin-top:10px', text: 'يتطلّب نشر دالة push-broadcast (انظر supabase/functions/README.md).' }));
+
+  const panel = el('div', { class: 'panel' }, [el('h3', { text: 'إرسال إشعار Push للمستخدمين' }), inner]);
+  view.append(panel);
+}
+
 /* ---------- wire up ---------- */
 $('#btn-login').onclick = doLogin;
 $('#in-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 $('#btn-logout').onclick = doLogout;
 $('#btn-refresh').onclick = () => { state.relLoaded = {}; go(state.resource); };
+$('#btn-export').onclick = exportCsv;
 $('#btn-new').onclick = () => openEditor(null);
 $('#btn-menu').onclick = () => $('#aside').classList.toggle('open');
 let searchT;
