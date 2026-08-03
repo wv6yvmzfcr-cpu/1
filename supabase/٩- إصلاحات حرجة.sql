@@ -96,7 +96,9 @@ begin
   return new;
 end $$;
 
--- ⭐ المُشغّل الناقص في ملفك — بدونه لا يُحفظ أي سعر عرض
+-- نستبدل مُشغّل الإدراج القديم (on_application_created من ملف ٦) بواحد
+-- مصحّح — نحذف القديم أولاً كي لا يُطلق المُشغّلان معاً على نفس الصف.
+drop trigger if exists on_application_created   on public.applications;
 drop trigger if exists snapshot_quoted_price_trg on public.applications;
 create trigger snapshot_quoted_price_trg
   before insert on public.applications
@@ -138,7 +140,9 @@ update public.applications a
    and a.quoted_price_myr is not null
    and a.weeks is not null;
 
--- View المقارنة الصحيح (يُنشأ الآن — قبل ضبط security_invoker)
+-- View المقارنة الصحيح. نحذفه أولاً لأن ملف ٦ أنشأه بترتيب أعمدة مختلف،
+-- و create or replace view لا يسمح بتغيير ترتيب/أسماء الأعمدة القائمة.
+drop view if exists public.v_application_pricing;
 create or replace view public.v_application_pricing as
 select
   a.id, a.user_id, a.weeks,
@@ -341,6 +345,32 @@ begin
     end if;
   end loop;
 end $$;
+
+
+-- =====================================================================
+-- ٦-ب) 🔴 إصلاح تكرار لا نهائي في سياسات RLS (خطأ حرج في ملف ٤)
+--   سياسة applications «partner reads consented» تستعلم من data_consents،
+--   وسياسة data_consents «student manages own consents» تستعلم من
+--   applications → حلقة لا نهائية: أي طالب يقرأ طلباته يحصل على
+--   "infinite recursion detected in policy". النتيجة: التطبيق معطّل تماماً
+--   لكل مستخدم مسجّل.
+--
+--   الحل: دالة security definer تفحص ملكية الطلب دون إعادة تفعيل RLS،
+--   فتُكسر الحلقة من جهة data_consents.
+-- =====================================================================
+create or replace function public.is_application_owner(p_app uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.applications where id = p_app and user_id = auth.uid());
+$$;
+
+drop policy if exists "student reads own consents" on public.data_consents;
+create policy "student reads own consents" on public.data_consents for select
+  using (public.is_application_owner(application_id));
+
+drop policy if exists "student manages own consents" on public.data_consents;
+create policy "student manages own consents" on public.data_consents for all
+  using (public.is_application_owner(application_id))
+  with check (public.is_application_owner(application_id));
 
 
 -- =====================================================================

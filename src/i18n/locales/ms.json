@@ -1,0 +1,230 @@
+{
+  "app_name": "EduLink Malaysia",
+  "home": {
+    "title": "Institut Bahasa",
+    "search": "Cari institut...",
+    "featured_ads": "Penginapan & servis pilihan",
+    "view_grid": "Grid",
+    "view_list": "Senarai",
+    "per_week": "seminggu",
+    "empty": "Tiada institut sepadan. Cuba ubah penapis."
+  },
+  "filters": {
+    "title": "Penapis",
+    "city": "Bandar",
+    "all_cities": "Semua bandar",
+    "max_price": "Harga mingguan maksimum",
+    "duration": "Tempoh kursus (minggu)",
+    "apply": "Guna",
+    "reset": "Set semula"
+  },
+  "institute": {
+    "about": "Tentang institut",
+    "features": "Kelebihan",
+    "apply_now": "Mohon sekarang",
+    "weeks": "Bilangan minggu",
+    "start_month": "Bulan mula",
+    "notes": "Nota tambahan (pilihan)",
+    "submit": "Hantar permohonan",
+    "submitted": "Permohonan dihantar! Jejak status di profil anda.",
+    "login_required": "Sila log masuk untuk memohon"
+  },
+  "listings": {
+    "title": "Penginapan & Servis",
+    "per_month": "sebulan",
+    "contact_whatsapp": "Hubungi melalui WhatsApp",
+    "wa_message": "Hai! Saya nampak iklan \"{{title}}\" di aplikasi EduLink dan ingin maklumat lanjut.",
+    "features": "Ciri-ciri"
+  },
+  "auth": {
+    "login": "Log masuk",
+    "register": "Daftar akaun",
+    "email": "E-mel",
+    "password": "Kata laluan",
+    "full_name": "Nama penuh",
+    "forgot": "Lupa kata laluan?",
+    "reset_sent": "Pautan set semula dihantar ke e-mel anda.",
+    "send_reset": "Hantar pautan",
+    "no_account": "Belum ada akaun?",
+    "have_account": "Sudah ada akaun?",
+    "logout": "Log keluar",
+    "check_email": "Semak e-mel anda untuk pengesahan."
+  },
+  "profile": {
+    "title": "Profil saya",
+    "my_applications": "Permohonan saya",
+    "no_applications": "Anda belum menghantar sebarang permohonan.",
+    "language": "Bahasa aplikasi",
+    "currency": "Mata wang",
+    "delete_account": "Padam akaun secara kekal",
+    "delete_confirm_title": "Padam akaun",
+    "delete_confirm_body": "Akaun dan semua data anda akan dipadam serta-merta secara kekal. Tindakan ini tidak boleh dibatalkan.",
+    "delete_yes": "Ya, padam akaun saya",
+    "cancel": "Batal",
+    "status": {
+      "documents": "Penyediaan dokumen",
+      "review": "Dalam semakan",
+      "submitted": "Dihantar ke institut",
+      "offer": "Surat tawaran",
+      "payment": "Pembayaran",
+      "visa": "Visa/EMGS",
+      "ticket": "Perjalanan",
+      "completed": "Selesai",
+      "rejected": "Ditolak",
+      "pending": "Menunggu",
+      "reviewing": "Dalam semakan",
+      "accepted": "Diterima"
+    }
+  },
+  "common": {
+    "loading": "Memuatkan...",
+    "error_title": "Ralat berlaku",
+    "error_network": "Tiada sambungan. Semak internet anda dan cuba lagi.",
+    "retry": "Cuba lagi",
+    "share": "Kongsi",
+    "restart_needed": "Aplikasi akan dimulakan semula untuk arah teks baharu."
+  },
+  "wizard": {
+    "title": "Wizard pendaftaran",
+    "required": "Wajib",
+    "progress": "Selesai {{done}} daripada {{total}} keperluan",
+    "pick_file": "Pilih & muat naik fail",
+    "replace_file": "Ganti fail ✓",
+    "invalid_format": "Format fail tidak diterima. Dibenarkan: {{formats}}",
+    "invalid_size": "Fail melebihi had {{mb}} MB. Mampatkan dan cuba lagi.",
+    "passport_short": "⛔ Pasport anda sah kurang daripada {{months}} bulan — peraturan asas EMGS. Perbaharui pasport dahulu, kemudian sambung semula.",
+    "finish": "Hantar fail lengkap untuk semakan",
+    "submitted": "Fail anda lengkap! Ia kini dalam semakan — jejak di skrin permohonan.",
+    "pick_date": "Ketik untuk pilih tarikh"
+  },
+  "tracker": {
+    "current_step": "Langkah semasa anda",
+    "your_action": "Tindakan anda sekarang:",
+    "eta": "Jangkaan: ~{{days}} hari",
+    "fix_needed": "Dokumen perlu pembetulan",
+    "pipeline": "Perjalanan permohonan anda",
+    "faq_title": "Soalan berkaitan langkah ini"
+  },
+  "assistant": {
+    "title": "Pemandu EduLink",
+    "subtitle": "Tahu status permohonan anda dan menjawab dalam bahasa anda",
+    "open": "Tanya pemandu pintar",
+    "placeholder": "Taip soalan anda...",
+    "typing": "Pemandu sedang menaip...",
+    "empty": "Cuba salah satu:",
+    "suggestions": [
+      "Apa yang kurang dalam fail saya?",
+      "Perlukah visa sebelum berlepas?",
+      "Bagaimana membayar yuran dengan selamat?",
+      "Bila surat tawaran tiba?"
+    ]
+  },
+  "mdac": {
+    "title": "Kad Ketibaan Digital (MDAC)",
+    "description": "Langkah kerajaan wajib untuk setiap pengembara ke Malaysia — berasingan daripada visa dan diperlukan walaupun bebas visa.",
+    "need_arrival": "Masukkan tarikh ketibaan dan nombor penerbangan anda di atas dahulu.",
+    "open_now": "Dibuka sekarang",
+    "opens_in": "Dibuka dalam {{days}} hari",
+    "dont_early": "⚠️ Jangan hantar lagi — portal kerajaan hanya menerima dalam tempoh 3 hari sebelum ketibaan.",
+    "scam_warning": "⚠️ Penghantaran percuma di portal rasmi sahaja. Mana-mana laman yang mengenakan bayaran adalah penipuan.",
+    "open_portal": "Buka portal rasmi & hantar",
+    "after_submit": "Selepas menghantar anda akan menerima kod QR dan rujukan. Masukkan di sini (pilihan):",
+    "ref_placeholder": "Nombor rujukan / kod MDAC",
+    "mark_done": "Saya telah hantar kad ✓",
+    "completed": "Telah dihantar. Simpan kod QR di telefon anda untuk lapangan terbang.",
+    "saved": "Status kad ketibaan disimpan. Selamat jalan!"
+  },
+  "photo": {
+    "tips_title": "Untuk hasil terbaik:",
+    "tips": [
+      "Wajah di tengah dan jelas",
+      "Pencahayaan baik, tiada bayang",
+      "Pandang terus ke kamera, ekspresi neutral",
+      "Tiada cermin mata hitam; tudung dibenarkan jika wajah jelas"
+    ],
+    "capture": "Ambil gambar",
+    "upload": "Muat naik gambar",
+    "permission": "Kami perlukan kebenaran kamera/galeri.",
+    "processing": "Menyediakan gambar anda...",
+    "processing_hint": "Membuang latar dan menjadikannya putih pada saiz betul",
+    "result_ready": "Gambar anda sedia dengan latar putih 👇",
+    "use_this": "Guna gambar ini",
+    "retake": "Cuba lagi",
+    "failed": "Pemprosesan gagal. Cuba gambar lebih jelas.",
+    "ready": "Gambar sedia dan mematuhi syarat",
+    "success": "Gambar diluluskan ✓"
+  },
+  "consent": {
+    "title": "Kongsi fail anda dengan institut",
+    "body": "Untuk melengkapkan pendaftaran, {{partner}} perlu menyemak fail anda. Tiada data dikongsi sebelum kebenaran anda.",
+    "will_share": "Hanya berikut akan dikongsi:",
+    "items": [
+      "Nama dan butiran hubungan",
+      "Dokumen diluluskan (pasport, gambar, sijil)",
+      "Butiran kursus (tempoh dan bulan mula)"
+    ],
+    "revocable": "Anda boleh menarik balik kebenaran bila-bila masa.",
+    "approve": "Saya bersetuju berkongsi fail saya",
+    "granted_title": "Fail anda telah dikongsi",
+    "granted_body": "{{partner}} kini boleh menyemak fail anda.",
+    "revoke_link": "Tarik balik kebenaran",
+    "revoke_title": "Tarik balik kebenaran",
+    "revoke_body": "Akses institut berhenti serta-merta. Anda pasti?",
+    "revoke_yes": "Ya, tarik balik"
+  },
+  "price": {
+    "month": "sebulan",
+    "on_request": "Harga atas permintaan",
+    "badge_estimated": "Anggaran",
+    "badge_confirmed": "Disahkan",
+    "range": "Julat pasaran: {{min}} — {{max}}",
+    "extra_fees": "Yuran tambahan wajib",
+    "fees_note": "Dibayar sekali semasa pendaftaran dan disahkan dalam surat tawaran.",
+    "final_title": "Harga muktamad anda",
+    "you_saw": "Harga semasa anda memohon",
+    "you_saw_estimate": "Anggaran semasa anda memohon",
+    "final_price": "Harga muktamad disahkan",
+    "higher_by": "{{amount}} lebih tinggi daripada anggaran.",
+    "lower_by": "{{amount}} lebih rendah 🎉",
+    "matched": "✓ Sama dengan harga dipaparkan"
+  },
+  "legal": {
+    "agree_prefix": "Saya telah membaca dan bersetuju dengan",
+    "terms": "Terma Penggunaan",
+    "privacy": "Dasar Privasi",
+    "and": "dan",
+    "section": "Perundangan",
+    "must_agree": "Anda mesti bersetuju untuk meneruskan"
+  },
+  "seo": {
+    "home_title": "Pusat Bahasa Inggeris di Malaysia — Harga & Ulasan | EduLink",
+    "home_desc": "Panduan lengkap pusat bahasa Inggeris di Kuala Lumpur: harga telus, penilaian Google sebenar, pengiktirafan disahkan.",
+    "hero_h1": "Belajar Bahasa Inggeris di Malaysia",
+    "hero_sub": "Pusat disahkan, harga telus, dan langkah visa dijelaskan.",
+    "hero_cta": "Lihat institut",
+    "featured": "Pusat disahkan",
+    "see_all": "Lihat semua",
+    "list_title": "Pusat Bahasa Inggeris di Malaysia | EduLink",
+    "list_h1": "Pusat bahasa Inggeris di Malaysia",
+    "list_desc": "{{count}} pusat bahasa Inggeris di Kuala Lumpur dengan penilaian sebenar dan harga telus.",
+    "list_intro": "Pusat yang kami pilih dan sahkan pengiktirafannya.",
+    "inst_title": "Yuran, program & pendaftaran di {{city}}",
+    "inst_desc": "{{name}} di {{city}} — penilaian {{rating}} daripada {{count}} ulasan.",
+    "accredited": "Diiktiraf oleh",
+    "programs": "Program & kursus",
+    "details": "Maklumat",
+    "hours": "Jam seminggu",
+    "levels": "Tahap",
+    "age": "Umur",
+    "address": "Alamat",
+    "official_site": "Laman rasmi",
+    "blog_title": "Blog EduLink",
+    "blog_h1": "Panduan & artikel",
+    "blog_desc": "Semua tentang belajar di Malaysia.",
+    "blog_empty": "Tiada artikel lagi."
+  },
+  "nav": {
+    "home": "Utama",
+    "institutes": "Institut"
+  }
+}
