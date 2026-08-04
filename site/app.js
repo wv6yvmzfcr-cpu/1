@@ -45,6 +45,13 @@ const T = {
     haveAccount: 'لديك حساب؟', noAccount: 'ليس لديك حساب؟', back: 'رجوع',
     startTip: 'اختر أول شهر تنوي بدء الدراسة فيه', ok: 'تم', apply_done: 'تم إرسال طلبك بنجاح!',
     save_text: 'حفظ', value: 'القيمة',
+    howNav: 'رحلة التقديم', howTitle: 'رحلة التقديم — من التسجيل حتى الوصول',
+    howSub: 'كل خطوة، ومدتها المتوقعة، وكل ما قد تواجهه — واضح أمامك من البداية.',
+    usually: 'عادةً', daysUnit: 'يوم', weeksUnit: 'أسبوع', totalEta: 'الوقت المتوقع حتى صدور التأشيرة',
+    visaPathT: 'مسار تأشيرتك', estimateNote: 'تقديري — قد يختلف حسب حالتك والجهات الرسمية.',
+    visaStates: 'حالات التأشيرة المحتملة', scenarios: 'أشياء قد تواجهها (وكيف نعالجها)',
+    startNow: 'ابدأ التقديم الآن', checkPath: 'اعرف مسارك: كم أسبوعاً تنوي الدراسة؟',
+    theSteps: 'خطوات التقديم', commonQs: 'أسئلة شائعة',
   },
   en: {
     institutes: 'Institutes', housing: 'Housing', login: 'Log in', logout: 'Log out', myApps: 'My applications',
@@ -63,6 +70,13 @@ const T = {
     haveAccount: 'Have an account?', noAccount: 'No account?', back: 'Back',
     startTip: 'Pick the first month you plan to start', ok: 'Done', apply_done: 'Your application was submitted!',
     save_text: 'Save', value: 'Value',
+    howNav: 'How it works', howTitle: 'Your journey — from sign-up to arrival',
+    howSub: 'Every step, its expected duration, and anything you might face — clear from the start.',
+    usually: 'usually', daysUnit: 'days', weeksUnit: 'weeks', totalEta: 'Estimated time until your visa is issued',
+    visaPathT: 'Your visa path', estimateNote: 'An estimate — it varies by your case and the authorities.',
+    visaStates: 'Possible visa states', scenarios: 'Things you might face (and how we handle them)',
+    startNow: 'Start applying', checkPath: 'Find your path: how many weeks will you study?',
+    theSteps: 'Application steps', commonQs: 'Common questions',
   },
 };
 const t = k => (T[S.lang] && T[S.lang][k]) || T.ar[k] || k;
@@ -156,6 +170,7 @@ function route() {
   const h = location.hash || '#/';
   const m = (re) => (h.match(re) || [])[1];
   if (h === '#/' || h === '') return viewHome();
+  if (h === '#/how') return viewHow();
   if (h === '#/housing') return viewHousing();
   if (m(/^#\/institute\/(.+)$/)) return viewInstitute(decodeURIComponent(m(/^#\/institute\/(.+)$/)));
   if (m(/^#\/apply\/(.+)$/)) return viewApply(decodeURIComponent(m(/^#\/apply\/(.+)$/)));
@@ -315,6 +330,158 @@ function statusBadge(s) {
   return el('span', { class: 'badge info' }, `${t('trackTitle')} · ${i + 1}/8`);
 }
 
+/* ---------- visa path + duration helpers ---------- */
+function visaPath(weeks) {
+  const days = (weeks || 0) * 7;
+  if (days > 0 && days <= 90) return {
+    short: true, days,
+    title: S.lang === 'ar' ? 'دورة قصيرة — إعفاء من التأشيرة المسبقة' : 'Short course — visa-exempt',
+    body: S.lang === 'ar'
+      ? 'مدة دراستك ضمن 90 يوماً، والسعوديون (ومعظم الخليجيين) معفون من التأشيرة المسبقة — فلا تحتاج Student Pass. المطلوب فقط: بطاقة MDAC خلال 3 أيام قبل الوصول.'
+      : 'Your course is within 90 days, and Saudis (and most GCC citizens) are visa-exempt — no Student Pass needed. You only need the MDAC within 3 days before arrival.',
+  };
+  return {
+    short: false, days,
+    title: S.lang === 'ar' ? 'دورة طويلة — تحتاج Student Pass عبر EMGS' : 'Long course — Student Pass via EMGS',
+    body: S.lang === 'ar'
+      ? 'مدة دراستك تتجاوز 90 يوماً، فتحتاج تصريح طالب (Student Pass). المعهد يقدّم طلبك نيابةً عنك عبر بوابة EMGS الحكومية. يجب أن تكون خارج ماليزيا وقت التقديم؛ وبعد الموافقة (VAL) تدخل وتستلم ملصق التصريح، ثم فحص طبي خلال 7 أيام من الوصول.'
+      : 'Your course exceeds 90 days, so you need a Student Pass. The institute files it for you via the EMGS portal. You must be outside Malaysia when applying; after approval (VAL) you enter, receive the pass, then a medical check within 7 days of arrival.',
+  };
+}
+// مجموع المدة المتوقعة من المراجعة حتى التأشيرة (بالأيام)
+function etaToVisa(steps) {
+  const wanted = ['review', 'submitted', 'visa'];
+  return (steps || []).reduce((s, st) => s + (wanted.includes(st.status) && st.eta_days ? st.eta_days : 0), 0);
+}
+function daysLabel(d) {
+  const wk = Math.round(d / 7);
+  return `~${d} ${t('daysUnit')}` + (wk >= 2 ? ` (≈ ${wk} ${t('weeksUnit')})` : '');
+}
+
+/* ---------- HOW IT WORKS (public journey page) ---------- */
+async function viewHow() {
+  spinner();
+  const [{ data: steps }, { data: cfgRows }, { data: faqs }] = await Promise.all([
+    S.sb.from('pipeline_steps').select('*').order('step_order'),
+    S.sb.from('app_config').select('*'),
+    S.sb.from('faq').select('*').eq('is_active', true).order('sort_order'),
+  ]);
+  const cfg = Object.fromEntries((cfgRows || []).map(c => [c.key, c.value]));
+  const eta = etaToVisa(steps || []);
+
+  const wrap = el('div');
+  wrap.append(el('div', { class: 'hero' }, [
+    el('h1', {}, t('howTitle')),
+    el('p', {}, t('howSub')),
+    el('button', { class: 'btn', onclick: () => go('#/') }, t('startNow')),
+  ]));
+
+  // interactive visa-path calculator
+  const weeksInp = el('input', { type: 'number', min: 1, value: 8, style: 'max-width:110px' });
+  const pathBox = el('div', { style: 'margin-top:12px' });
+  const drawPath = () => {
+    const p = visaPath(Number(weeksInp.value) || 0);
+    pathBox.innerHTML = '';
+    pathBox.append(el('div', { class: 'action' }, [
+      el('b', {}, (p.short ? '🟢 ' : '🛂 ') + p.title),
+      el('p', { style: 'margin:.4em 0 0' }, p.body),
+    ]));
+  };
+  weeksInp.addEventListener('input', drawPath);
+  wrap.append(el('div', { class: 'panel' }, [
+    el('h3', { style: 'margin-top:0' }, '🛂 ' + t('visaPathT')),
+    el('label', {}, t('checkPath')),
+    el('div', { class: 'row', style: 'align-items:center' }, [weeksInp, el('span', { class: 'muted' }, t('weeksUnit'))]),
+    pathBox,
+    el('div', { class: 'muted', style: 'font-size:12.5px;margin-top:6px' }, 'ℹ️ ' + t('estimateNote')),
+  ]));
+
+  // expected total time to visa
+  if (eta > 0) {
+    wrap.append(el('div', { class: 'panel', style: 'display:flex;gap:14px;align-items:center' }, [
+      el('div', { style: 'font-size:34px' }, '⏱'),
+      el('div', {}, [
+        el('div', { class: 'muted' }, t('totalEta')),
+        el('div', { style: 'font-size:24px;font-weight:800;color:var(--brand)' }, daysLabel(eta)),
+        el('div', { class: 'muted', style: 'font-size:12.5px' }, t('estimateNote')),
+      ]),
+    ]));
+  }
+
+  // the steps with durations
+  const stepPanel = el('div', { class: 'panel' }, el('h3', { style: 'margin-top:0' }, t('theSteps')));
+  const stepBox = el('div', { class: 'steps' });
+  (steps || []).forEach(s => stepBox.append(el('div', { class: 'step done' }, [
+    el('div', { class: 'dot' }, s.step_order),
+    el('div', { class: 'st-body' }, [
+      el('h4', {}, pick(s.title)),
+      el('p', { class: 'muted', style: 'margin:.2em 0' }, pick(s.explanation)),
+      s.eta_days ? el('div', { class: 'muted', style: 'font-size:12.5px' }, '⏱ ' + t('usually') + ' ~' + s.eta_days + ' ' + t('daysUnit')) : null,
+    ]),
+  ])));
+  stepPanel.append(stepBox);
+  wrap.append(stepPanel);
+
+  // possible visa states
+  const states = S.lang === 'ar' ? [
+    ['📋 تجهيز المستندات', 'نجمع ونراجع ملفك ونفحص كل مستند قبل الإرسال.'],
+    ['📤 مُرسل للمعهد / EMGS', 'قُدّم طلبك رسمياً للجهة المختصة.'],
+    ['⏳ قيد المعالجة الحكومية', 'EMGS يدقّق الطلب (يستغرق عادة عدة أسابيع للدورات الطويلة).'],
+    ['✅ صدور الموافقة (VAL)', 'خطاب الموافقة المبدئي؛ عندها تحجز تذكرتك وتجهّز سفرك.'],
+    ['🛬 الدخول واستلام التصريح', 'تستلم ملصق Student Pass بعد الوصول، مع فحص طبي خلال 7 أيام.'],
+    ['🟢 دورة قصيرة: إعفاء', 'لا تحتاج تأشيرة مسبقة — فقط بطاقة MDAC قبل الوصول بـ3 أيام.'],
+  ] : [
+    ['📋 Preparing documents', 'We collect and auto-check each document before submission.'],
+    ['📤 Sent to institute / EMGS', 'Your file is officially filed with the authority.'],
+    ['⏳ Government processing', 'EMGS reviews the application (usually a few weeks for long courses).'],
+    ['✅ Approval issued (VAL)', 'The approval letter — now you book your flight.'],
+    ['🛬 Arrival & pass collection', 'You receive the Student Pass sticker after arrival, plus a medical within 7 days.'],
+    ['🟢 Short course: exempt', 'No prior visa — just the MDAC 3 days before arrival.'],
+  ];
+  const stPanel = el('div', { class: 'panel' }, el('h3', { style: 'margin-top:0' }, t('visaStates')));
+  states.forEach(([h, b]) => stPanel.append(el('div', { style: 'padding:9px 0;border-bottom:1px solid var(--line)' }, [
+    el('b', {}, h), el('div', { class: 'muted', style: 'font-size:14px' }, b),
+  ])));
+  wrap.append(stPanel);
+
+  // scenarios you might face
+  const scen = S.lang === 'ar' ? [
+    ['جواز صلاحيته أقل من 18 شهراً', 'نكتشفه فوراً ونطلب منك تجديده قبل التقديم — لتفادي رفض متأخر.'],
+    ['صورتك غير مطابقة', 'استخدم زر «عدّلها تلقائياً» — نجعل الخلفية بيضاء والمقاس صحيحاً دون استوديو.'],
+    ['رفض مستند', 'يصلك السبب وطريقة الإصلاح بالضبط بلغتك، وترفع البديل مباشرةً.'],
+    ['هل يمكنني العمل؟', 'لا — طلاب مراكز اللغة ممنوعون من العمل (تصريح الـ20 ساعة لطلاب الجامعات فقط).'],
+    ['الفحص الطبي', 'يتم داخل ماليزيا خلال 7 أيام من وصولك، ويرتّبه المعهد.'],
+    ['بطاقة MDAC', 'مجانية عبر البوابة الرسمية فقط — أي موقع يطلب رسوماً احتيالي.'],
+  ] : [
+    ['Passport valid under 18 months', 'We catch it immediately and ask you to renew first — avoiding a late rejection.'],
+    ['Photo not compliant', 'Use “Auto-fix” — white background and correct size, no studio needed.'],
+    ['A document is rejected', 'You get the exact reason and fix in your language, and re-upload right away.'],
+    ['Can I work?', 'No — language-centre students cannot work (the 20-hour permit is for university students).'],
+    ['Medical check', 'Done inside Malaysia within 7 days of arrival; the institute arranges it.'],
+    ['MDAC card', 'Free on the official portal only — any site charging a fee is a scam.'],
+  ];
+  const scPanel = el('div', { class: 'panel' }, el('h3', { style: 'margin-top:0' }, t('scenarios')));
+  scen.forEach(([q, a]) => scPanel.append(el('details', { style: 'border-bottom:1px solid var(--line);padding:9px 0' }, [
+    el('summary', { style: 'cursor:pointer;font-weight:600' }, q),
+    el('p', { class: 'muted', style: 'margin:.5em 0 0' }, a),
+  ])));
+  wrap.append(scPanel);
+
+  // FAQ
+  if (faqs && faqs.length) {
+    const fp = el('div', { class: 'panel' }, el('h3', { style: 'margin-top:0' }, t('commonQs')));
+    faqs.slice(0, 8).forEach(f => fp.append(el('details', { style: 'border-bottom:1px solid var(--line);padding:9px 0' }, [
+      el('summary', { style: 'cursor:pointer;font-weight:600' }, pick(f.question)),
+      el('p', { class: 'muted', style: 'margin:.5em 0 0' }, pick(f.answer)),
+    ])));
+    wrap.append(fp);
+  }
+
+  wrap.append(el('div', { class: 'center', style: 'margin:24px 0' },
+    el('button', { class: 'btn accent', onclick: () => go('#/') }, t('startNow'))));
+  mount(wrap);
+}
+
 /* ---------- helpers for docs ---------- */
 function fileToBase64(file) {
   return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = rej; r.readAsDataURL(file); });
@@ -381,12 +548,32 @@ async function viewTracker(id) {
       el('div', { class: 'dot' }, idx < curIdx ? '✓' : (s.step_order)),
       el('div', { class: 'st-body' }, [
         el('h4', {}, pick(s.title)),
+        s.eta_days ? el('div', { class: 'muted', style: 'font-size:12.5px' }, '⏱ ' + t('usually') + ' ~' + s.eta_days + ' ' + t('daysUnit')) : null,
         idx === curIdx ? el('p', { class: 'muted', style: 'margin:.2em 0' }, pick(s.explanation)) : null,
         idx === curIdx ? el('div', { class: 'action' }, [el('b', {}, t('yourAction') + ': '), pick(s.your_action)]) : null,
       ]),
     ]));
   });
   wrap.append(stepBox);
+
+  // visa path (by course length) + estimated time to visa
+  const vp = visaPath(app.weeks);
+  const eta = etaToVisa(steps || []);
+  wrap.append(el('div', { class: 'panel' }, [
+    el('h3', { style: 'margin-top:0' }, '🛂 ' + t('visaPathT')),
+    el('div', { class: 'action' }, [
+      el('b', {}, (vp.short ? '🟢 ' : '🛂 ') + vp.title),
+      el('p', { style: 'margin:.4em 0 0' }, vp.body),
+    ]),
+    (!vp.short && eta > 0) ? el('div', { style: 'margin-top:12px;display:flex;gap:12px;align-items:center' }, [
+      el('div', { style: 'font-size:28px' }, '⏱'),
+      el('div', {}, [
+        el('div', { class: 'muted', style: 'font-size:13.5px' }, t('totalEta')),
+        el('div', { style: 'font-size:20px;font-weight:800;color:var(--brand)' }, daysLabel(eta)),
+      ]),
+    ]) : null,
+    el('div', { class: 'muted', style: 'font-size:12.5px;margin-top:8px' }, 'ℹ️ ' + t('estimateNote')),
+  ]));
 
   // requirements + upload
   const reqPanel = el('div', { class: 'panel' }, el('h3', { style: 'margin-top:0' }, t('requirements')));
