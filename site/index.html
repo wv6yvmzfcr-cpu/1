@@ -140,6 +140,21 @@
     @media (prefers-reduced-motion:reduce){.spin{animation:none}.card:hover{transform:none}}
     footer{border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;text-align:center;padding:26px 18px}
     :focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:8px}
+
+    /* assistant chat */
+    .fab{position:fixed;inset-block-end:20px;inset-inline-end:20px;z-index:70;width:56px;height:56px;
+      border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:23px;box-shadow:var(--shadow)}
+    .fab:hover{background:var(--accent-2)}
+    .chat{position:fixed;inset-block-end:86px;inset-inline-end:20px;z-index:70;width:342px;
+      max-width:calc(100vw - 36px);height:470px;max-height:72vh;background:var(--card);border:1px solid var(--line);
+      border-radius:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+    .chat-head{padding:13px 16px;border-bottom:1px solid var(--line);font-weight:800;display:flex;gap:8px;align-items:center}
+    .chat-body{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+    .msg{max-width:84%;padding:9px 13px;border-radius:15px;font-size:14.5px;line-height:1.65;white-space:pre-wrap}
+    .msg.u{align-self:flex-start;background:var(--brand);color:#fff;border-end-start-radius:4px}
+    .msg.a{align-self:flex-end;background:var(--chip);color:var(--ink);border-end-end-radius:4px}
+    .chat-foot{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+    details summary::-webkit-details-marker{display:none}
   </style>
 </head>
 <body>

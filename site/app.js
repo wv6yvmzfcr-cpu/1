@@ -315,14 +315,33 @@ function statusBadge(s) {
   return el('span', { class: 'badge info' }, `${t('trackTitle')} · ${i + 1}/8`);
 }
 
+/* ---------- helpers for docs ---------- */
+function fileToBase64(file) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = rej; r.readAsDataURL(file); });
+}
+// فحص فوري قبل الرفع (يوفّر رفضاً لاحقاً) — يعتمد على قواعد المتطلب
+function validateFile(file, v) {
+  v = v || {};
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  if (Array.isArray(v.formats) && v.formats.length && !v.formats.includes(ext)) {
+    return { ok: false, msg: (S.lang === 'ar' ? 'الصيغة المسموحة: ' : 'Allowed formats: ') + v.formats.join(', ') };
+  }
+  if (v.max_mb && file.size > v.max_mb * 1024 * 1024) {
+    return { ok: false, msg: (S.lang === 'ar' ? 'الحجم الأقصى ' : 'Max size ') + v.max_mb + 'MB' };
+  }
+  return { ok: true };
+}
+
 /* ---------- TRACKER ---------- */
 async function viewTracker(id) {
   if (!S.user) { openAuth('#/app/' + id); return; }
   spinner();
-  const [{ data: app }, { data: steps }, { data: reasons }] = await Promise.all([
+  const [{ data: app }, { data: steps }, { data: reasons }, { data: cfgRows }, { data: faqs }] = await Promise.all([
     S.sb.from('applications').select('*, institutes(name,city,id)').eq('id', id).maybeSingle(),
     S.sb.from('pipeline_steps').select('*').order('step_order'),
     S.sb.from('rejection_reasons').select('*'),
+    S.sb.from('app_config').select('*'),
+    S.sb.from('faq').select('*').eq('is_active', true).order('sort_order'),
   ]);
   if (!app) return mount(el('div', { class: 'empty' }, '—'));
   const [{ data: reqs }, { data: docs }, { data: events }] = await Promise.all([
@@ -332,11 +351,26 @@ async function viewTracker(id) {
   ]);
   const reasonMap = Object.fromEntries((reasons || []).map(r => [r.key, r]));
   const docMap = Object.fromEntries((docs || []).map(d => [d.requirement_key, d]));
+  const cfg = Object.fromEntries((cfgRows || []).map(c => [c.key, c.value]));
   const curIdx = STEP_ORDER.indexOf(app.status);
+  const reload = () => viewTracker(id);
 
   const wrap = el('div');
   wrap.append(el('div', { class: 'back', onclick: () => go('#/my') }, '→ ' + t('back')));
   wrap.append(el('h1', { class: 'page' }, pick(app.institutes.name)));
+
+  // progress summary
+  const required = (reqs || []).filter(r => r.is_required !== false);
+  const approved = required.filter(r => docMap[r.key]?.status === 'approved').length;
+  const pct = required.length ? Math.round(approved / required.length * 100) : 0;
+  wrap.append(el('div', { class: 'panel' }, [
+    el('div', { style: 'display:flex;justify-content:space-between;margin-bottom:8px' }, [
+      el('b', {}, (S.lang === 'ar' ? 'اكتمال المستندات' : 'Documents complete')),
+      el('span', { class: 'muted' }, `${approved}/${required.length}`),
+    ]),
+    el('div', { style: 'height:10px;background:var(--chip);border-radius:20px;overflow:hidden' },
+      el('div', { style: `height:100%;width:${pct}%;background:var(--accent);transition:width .4s` })),
+  ]));
 
   // stepper
   const stepBox = el('div', { class: 'steps panel' });
@@ -356,8 +390,26 @@ async function viewTracker(id) {
 
   // requirements + upload
   const reqPanel = el('div', { class: 'panel' }, el('h3', { style: 'margin-top:0' }, t('requirements')));
-  (reqs || []).forEach(r => reqPanel.append(docRow(r, docMap[r.key], reasonMap, app, () => viewTracker(id))));
+  (reqs || []).forEach(r => reqPanel.append(docRow(r, docMap[r.key], reasonMap, app, reload)));
   wrap.append(reqPanel);
+
+  // visa (EMGS) + travel + MDAC
+  wrap.append(travelPanel(app, steps || [], cfg, reload));
+
+  // contextual FAQ
+  const rel = (faqs || []).filter(f => (f.context_tags || []).includes(app.status));
+  const showFaq = (rel.length ? rel : (faqs || []).slice(0, 3)).slice(0, 5);
+  if (showFaq.length) {
+    const fp = el('div', { class: 'panel' }, el('h3', { style: 'margin-top:0' }, (S.lang === 'ar' ? 'أسئلة قد تهمّك' : 'Helpful answers')));
+    showFaq.forEach(f => {
+      const det = el('details', { style: 'border-bottom:1px solid var(--line);padding:8px 0' }, [
+        el('summary', { style: 'cursor:pointer;font-weight:600' }, pick(f.question)),
+        el('p', { class: 'muted', style: 'margin:.5em 0 0' }, pick(f.answer)),
+      ]);
+      fp.append(det);
+    });
+    wrap.append(fp);
+  }
 
   // timeline
   if (events && events.length) {
@@ -379,10 +431,16 @@ function docRow(r, doc, reasonMap, app, reload) {
   else if (doc) badge = el('span', { class: 'badge warn' }, t('pending'));
   else badge = el('span', { class: 'badge', style: 'background:var(--chip);color:var(--muted)' }, t('notUploaded'));
 
+  const v = r.validation || {};
+  const hint = [];
+  if (Array.isArray(v.formats) && v.formats.length) hint.push(v.formats.join('/').toUpperCase());
+  if (v.max_mb) hint.push('≤' + v.max_mb + 'MB');
+
   const row = el('div', { class: 'doc' }, [
     el('div', { class: 'dinfo' }, [
-      el('b', {}, pick(r.name)), badge,
+      el('b', {}, pick(r.name)), ' ', badge,
       r.description ? el('div', { class: 'muted', style: 'font-size:13px' }, pick(r.description)) : null,
+      hint.length ? el('div', { class: 'muted', style: 'font-size:12px' }, '📎 ' + hint.join(' · ')) : null,
       (status === 'rejected' && doc.rejection_key && reasonMap[doc.rejection_key])
         ? el('div', { class: 'fix' }, [el('b', {}, '⚠️ ' + pick(reasonMap[doc.rejection_key].title) + ': '), pick(reasonMap[doc.rejection_key].fix)]) : null,
     ]),
@@ -394,9 +452,11 @@ function docRow(r, doc, reasonMap, app, reload) {
     const fi = el('input', { type: 'file', accept: '.pdf,.jpg,.jpeg,.png', style: 'display:none' });
     fi.addEventListener('change', async () => {
       const f = fi.files[0]; if (!f) return;
+      const chk = validateFile(f, v);
+      if (!chk.ok) { fi.value = ''; return toast('⚠️ ' + chk.msg, 'err'); }
       const ext = (f.name.split('.').pop() || 'jpg').toLowerCase();
       const path = `${S.user.id}/${app.id}/${r.key}.${ext}`;
-      toast('جارٍ الرفع…');
+      toast(S.lang === 'ar' ? 'جارٍ الرفع…' : 'Uploading…');
       const { error: upErr } = await S.sb.storage.from('documents').upload(path, f, { upsert: true, contentType: f.type });
       if (upErr) return toast('تعذّر الرفع: ' + upErr.message, 'err');
       const { error } = await S.sb.from('application_documents').upsert(
@@ -405,9 +465,15 @@ function docRow(r, doc, reasonMap, app, reload) {
       if (error) return toast('خطأ: ' + error.message, 'err');
       toast(t('uploaded'), 'ok'); reload();
     });
-    row.append(el('button', { class: 'btn sm', onclick: () => fi.click() }, '⤒ ' + (doc ? t('uploaded') + ' — ' + t('upload') : t('upload'))), fi);
+    const actions = el('div', { class: 'row', style: 'gap:8px' });
+    // ⭐ صورة شخصية: زر التعديل بالذكاء الاصطناعي
+    if (r.key === 'photo') {
+      actions.append(el('button', { class: 'btn sm accent', onclick: () => enhancePhoto(app, reload) },
+        '✨ ' + (S.lang === 'ar' ? 'عدّلها تلقائياً' : 'Auto-fix')));
+    }
+    actions.append(el('button', { class: 'btn ghost sm', onclick: () => fi.click() }, '⤒ ' + t('upload')), fi);
+    row.append(actions);
   } else {
-    // text / date / select → value input
     const inp = el('input', { type: r.input_type === 'date' ? 'date' : 'text', value: doc?.value_text || '', style: 'max-width:200px' });
     row.append(inp, el('button', {
       class: 'btn sm', onclick: async () => {
@@ -420,6 +486,102 @@ function docRow(r, doc, reasonMap, app, reload) {
     }, t('save_text')));
   }
   return row;
+}
+
+/* ---------- ✨ AI photo enhancement (photo-passport function) ---------- */
+function enhancePhoto(app, reload) {
+  const fi = el('input', { type: 'file', accept: 'image/*' });
+  fi.onchange = async () => {
+    const f = fi.files[0]; if (!f) return;
+    toast(S.lang === 'ar' ? '✨ جارٍ معالجة صورتك…' : '✨ Enhancing your photo…');
+    let base64; try { base64 = await fileToBase64(f); } catch { return toast('تعذّر قراءة الصورة', 'err'); }
+    const { data, error } = await S.sb.functions.invoke('photo-passport', { body: { imageBase64: base64, applicationId: app.id } });
+    if (error || !data || data.error) {
+      return toast(S.lang === 'ar'
+        ? 'ميزة تعديل الصورة تحتاج تفعيلاً من الإدارة (دالة photo-passport).'
+        : 'Photo enhancement is not enabled yet.', 'err');
+    }
+    photoPreview(data.preview, data.path, app, reload);
+  };
+  fi.click();
+}
+function photoPreview(previewUrl, path, app, reload) {
+  const root = $('#modalRoot');
+  const overlay = el('div', { class: 'overlay', onclick: e => { if (e.target === overlay) root.innerHTML = ''; } });
+  overlay.append(el('div', { class: 'modal center' }, [
+    el('h2', {}, S.lang === 'ar' ? 'صورتك جاهزة ✨' : 'Your photo is ready ✨'),
+    el('p', { class: 'muted' }, S.lang === 'ar' ? 'خلفية بيضاء ومقاس صورة الجواز (35×45مم).' : 'White background, passport size.'),
+    el('img', { src: previewUrl, style: 'width:170px;height:auto;border-radius:12px;margin:12px auto;border:1px solid var(--line)' }),
+    el('button', {
+      class: 'btn accent block', onclick: async () => {
+        const { error } = await S.sb.from('application_documents').upsert(
+          { application_id: app.id, requirement_key: 'photo', storage_path: path },
+          { onConflict: 'application_id,requirement_key' });
+        root.innerHTML = ''; toast(error ? error.message : t('uploaded'), error ? 'err' : 'ok'); if (!error) reload();
+      },
+    }, S.lang === 'ar' ? 'استخدم هذه الصورة' : 'Use this photo'),
+    el('button', { class: 'btn ghost block', style: 'margin-top:8px', onclick: () => { root.innerHTML = ''; } },
+      S.lang === 'ar' ? 'إعادة المحاولة' : 'Try another'),
+  ]));
+  root.innerHTML = ''; root.append(overlay);
+}
+
+/* ---------- 🛂 Visa (EMGS) + travel + MDAC panel ---------- */
+function travelPanel(app, steps, cfg, reload) {
+  const visaStep = steps.find(s => s.status === 'visa');
+  const mdac = cfg['mdac'] || {};
+  const entryPoints = mdac.entry_points || [];
+
+  const arrival = el('input', { type: 'date', value: app.arrival_date || '' });
+  const flight = el('input', { value: app.flight_number || '', placeholder: 'MH123' });
+  const entry = el('select', {});
+  entry.append(el('option', { value: '' }, '—'));
+  entryPoints.forEach(p => entry.append(el('option', { value: p, selected: p === app.entry_point ? '' : null }, p)));
+  const addr = el('textarea', { placeholder: S.lang === 'ar' ? 'عنوان سكنك في ماليزيا' : 'Your address in Malaysia' });
+  addr.value = app.address_my || '';
+  const mdacDone = el('input', { type: 'checkbox' }); mdacDone.checked = !!app.mdac_done;
+  const mdacRef = el('input', { value: app.mdac_ref || '', placeholder: S.lang === 'ar' ? 'الرقم المرجعي بعد التقديم' : 'Reference after submission' });
+
+  const panel = el('div', { class: 'panel' }, [
+    el('h3', { style: 'margin-top:0' }, '🛂 ' + (S.lang === 'ar' ? 'التأشيرة (EMGS) والوصول' : 'Visa (EMGS) & arrival')),
+    visaStep ? el('p', { class: 'muted', style: 'font-size:14px' }, pick(visaStep.explanation)) : null,
+
+    // MDAC card
+    el('div', { class: 'action', style: 'margin:10px 0' }, [
+      el('b', {}, '🪪 ' + (S.lang === 'ar' ? 'بطاقة الوصول الرقمية (MDAC)' : 'Digital Arrival Card (MDAC)')),
+      el('p', { class: 'muted', style: 'font-size:13.5px;margin:.4em 0' }, S.lang === 'ar'
+        ? `إجراء حكومي مجاني إلزامي، يُقدَّم خلال ${mdac.window_days || 3} أيام فقط قبل الوصول عبر البوابة الرسمية. أي موقع يطلب رسوماً احتيالي.`
+        : `A free mandatory step, submitted only within ${mdac.window_days || 3} days before arrival on the official portal.`),
+      mdac.official_url ? el('a', { class: 'btn ghost sm', href: mdac.official_url, target: '_blank', rel: 'noopener' },
+        '🔗 ' + (S.lang === 'ar' ? 'البوابة الرسمية لـ MDAC' : 'Official MDAC portal')) : null,
+    ]),
+
+    el('div', { class: 'row' }, [
+      el('div', { style: 'flex:1;min-width:150px' }, [el('label', {}, S.lang === 'ar' ? 'تاريخ الوصول' : 'Arrival date'), arrival]),
+      el('div', { style: 'flex:1;min-width:150px' }, [el('label', {}, S.lang === 'ar' ? 'رقم الرحلة' : 'Flight number'), flight]),
+    ]),
+    el('div', { class: 'row' }, [
+      el('div', { style: 'flex:1;min-width:150px' }, [el('label', {}, S.lang === 'ar' ? 'منفذ الدخول' : 'Entry point'), entry]),
+    ]),
+    el('label', {}, S.lang === 'ar' ? 'العنوان في ماليزيا' : 'Address in Malaysia'), addr,
+    el('label', { style: 'display:flex;align-items:center;gap:8px;margin-top:12px' }, [mdacDone, el('span', {}, S.lang === 'ar' ? 'قدّمت بطاقة MDAC' : 'MDAC submitted')]),
+    mdacRef,
+    el('button', {
+      class: 'btn block', style: 'margin-top:14px',
+      onclick: async (e) => {
+        e.target.disabled = true;
+        const { error } = await S.sb.from('applications').update({
+          arrival_date: arrival.value || null, flight_number: flight.value || null,
+          entry_point: entry.value || null, address_my: addr.value || null,
+          mdac_done: mdacDone.checked, mdac_ref: mdacRef.value || null,
+        }).eq('id', app.id);
+        e.target.disabled = false;
+        toast(error ? ('تعذّر الحفظ: ' + error.message) : t('ok'), error ? 'err' : 'ok');
+        if (!error) reload();
+      },
+    }, S.lang === 'ar' ? 'حفظ بيانات السفر' : 'Save travel details'),
+  ]);
+  return panel;
 }
 
 /* ---------- PROFILE ---------- */
@@ -545,6 +707,40 @@ function openAuth(redirect) {
 
 async function doLogout() { await S.sb.auth.signOut(); go('#/'); }
 
+/* ---------- 💬 floating AI assistant (assistant function) ---------- */
+function mountAssistant() {
+  if (document.getElementById('eduFab')) return;
+  const fab = el('button', { class: 'fab', id: 'eduFab', title: 'مساعد', 'aria-label': 'مساعد' }, '💬');
+  document.body.append(fab);
+  let panel = null;
+  fab.onclick = () => {
+    if (panel) { panel.remove(); panel = null; fab.textContent = '💬'; return; }
+    fab.textContent = '✕';
+    const body = el('div', { class: 'chat-body' });
+    const input = el('input', { placeholder: S.lang === 'ar' ? 'اسأل عن أي خطوة…' : 'Ask anything…' });
+    const send = async () => {
+      const q = input.value.trim(); if (!q) return;
+      if (!S.user) { toast(S.lang === 'ar' ? 'سجّل الدخول لاستخدام المساعد' : 'Log in to use the assistant', 'err'); openAuth(location.hash); return; }
+      input.value = '';
+      body.append(el('div', { class: 'msg u' }, q)); body.scrollTop = body.scrollHeight;
+      const thinking = el('div', { class: 'msg a' }, '…'); body.append(thinking); body.scrollTop = body.scrollHeight;
+      const { data, error } = await S.sb.functions.invoke('assistant', { body: { message: q, lang: S.lang } });
+      thinking.textContent = (error || !data || data.error || !data.reply)
+        ? (S.lang === 'ar' ? 'المساعد غير مفعّل حالياً (يتطلّب نشر دالة assistant).' : 'Assistant is not enabled yet.')
+        : data.reply;
+      body.scrollTop = body.scrollHeight;
+    };
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+    panel = el('div', { class: 'chat' }, [
+      el('div', { class: 'chat-head' }, ['🎓 ', S.lang === 'ar' ? 'مرشد إيدولينك' : 'EduLink guide']),
+      body,
+      el('div', { class: 'chat-foot' }, [input, el('button', { class: 'btn sm', onclick: send }, '➤')]),
+    ]);
+    body.append(el('div', { class: 'msg a' }, S.lang === 'ar' ? 'أهلاً! اسألني عن أي خطوة في تسجيلك.' : 'Hi! Ask me about any step in your application.'));
+    document.body.append(panel); input.focus();
+  };
+}
+
 /* ---------- go ---------- */
 window.go = go;
-init();
+init().then(mountAssistant);
