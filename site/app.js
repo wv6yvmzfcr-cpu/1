@@ -23,7 +23,7 @@ const spinner = () => { $('#app').innerHTML = '<div class="spin"></div>'; };
 const S = {
   sb: null, user: null, profile: null,
   lang: localStorage.getItem('edu_lang') || 'ar',
-  currency: null, currencies: [],
+  currency: null, currencies: [], cfg: {},
 };
 
 /* ---------- i18n (UI strings) ---------- */
@@ -52,6 +52,8 @@ const T = {
     visaStates: 'حالات التأشيرة المحتملة', scenarios: 'أشياء قد تواجهها (وكيف نعالجها)',
     startNow: 'ابدأ التقديم الآن', checkPath: 'اعرف مسارك: كم أسبوعاً تنوي الدراسة؟',
     theSteps: 'خطوات التقديم', commonQs: 'أسئلة شائعة',
+    whatsapp: 'رقم واتساب', whatsappHint: 'نرسل لك تحديثات طلبك على واتساب، ومنه تتواصل مع الدعم.',
+    supportBtn: 'تواصل مع الدعم (واتساب)', humanSupport: 'أو كلّم موظفاً عبر واتساب',
   },
   en: {
     institutes: 'Institutes', housing: 'Housing', login: 'Log in', logout: 'Log out', myApps: 'My applications',
@@ -77,6 +79,8 @@ const T = {
     visaStates: 'Possible visa states', scenarios: 'Things you might face (and how we handle them)',
     startNow: 'Start applying', checkPath: 'Find your path: how many weeks will you study?',
     theSteps: 'Application steps', commonQs: 'Common questions',
+    whatsapp: 'WhatsApp number', whatsappHint: 'We send application updates on WhatsApp, and you reach support from it.',
+    supportBtn: 'Contact support (WhatsApp)', humanSupport: 'Or chat with a human on WhatsApp',
   },
 };
 const t = k => (T[S.lang] && T[S.lang][k]) || T.ar[k] || k;
@@ -120,6 +124,7 @@ async function init() {
   S.user = data?.session?.user || null;
   if (S.user) await loadProfile();
   await loadCurrencies();
+  await loadConfig();
 
   S.sb.auth.onAuthStateChange((_e, sess) => {
     S.user = sess?.user || null;
@@ -141,6 +146,17 @@ async function loadCurrencies() {
   S.currencies = data || [];
   S.currency = S.currencies.find(c => c.code === (S.profile?.preferred_currency || 'SAR')) || S.currencies[0] || null;
 }
+async function loadConfig() {
+  const { data } = await S.sb.from('app_config').select('*');
+  S.cfg = Object.fromEntries((data || []).map(c => [c.key, c.value]));
+}
+function supportNumber() { return (S.cfg?.support?.whatsapp || '').replace(/[^\d]/g, ''); }
+window.contactSupport = () => {
+  const n = supportNumber();
+  if (!n) return toast(S.lang === 'ar' ? 'رقم الدعم غير مُعدّ بعد.' : 'Support number not set yet.', 'err');
+  const msg = encodeURIComponent(S.lang === 'ar' ? 'مرحباً، أحتاج مساعدة في التقديم عبر إيدولينك.' : 'Hi, I need help with my EduLink application.');
+  window.open(`https://wa.me/${n}?text=${msg}`, '_blank');
+};
 
 /* ---------- header ---------- */
 function renderHeader() {
@@ -273,6 +289,7 @@ async function viewApply(slug) {
 
   const weeks = el('input', { type: 'number', min: i.min_weeks || 4, max: i.max_weeks || 48, value: i.min_weeks || 4 });
   const start = el('input', { type: 'month' });
+  const wa = el('input', { type: 'tel', placeholder: '9665xxxxxxxx', value: S.profile?.phone || '' });
   const wrap = el('div');
   wrap.append(el('div', { class: 'back', onclick: () => go('#/institute/' + slug) }, '→ ' + t('back')));
   wrap.append(el('div', { class: 'panel', style: 'max-width:560px' }, [
@@ -280,11 +297,16 @@ async function viewApply(slug) {
     el('label', {}, t('weeks') + ' *'), weeks,
     el('label', {}, t('startMonth') + ' *'), start,
     el('div', { class: 'muted', style: 'font-size:13px;margin-top:4px' }, t('startTip')),
+    el('label', {}, '🟢 ' + t('whatsapp') + ' *'), wa,
+    el('div', { class: 'muted', style: 'font-size:13px;margin-top:4px' }, t('whatsappHint')),
     el('button', {
       class: 'btn accent block', style: 'margin-top:20px',
       onclick: async (e) => {
-        if (!start.value) return toast('اختر شهر البدء', 'err');
+        if (!start.value) return toast(S.lang === 'ar' ? 'اختر شهر البدء' : 'Pick a start month', 'err');
+        if (!wa.value.trim()) return toast(S.lang === 'ar' ? 'أدخل رقم واتساب لنرسل لك التحديثات' : 'Enter your WhatsApp number', 'err');
         const btn = e.target; btn.disabled = true;
+        // save WhatsApp on the profile so notifications can reach the student
+        await S.sb.from('profiles').update({ phone: wa.value.trim() }).eq('id', S.user.id);
         const startDate = start.value + '-01';
         const { data, error } = await S.sb.from('applications').insert({
           user_id: S.user.id, institute_id: i.id, weeks: Number(weeks.value),
@@ -524,7 +546,11 @@ async function viewTracker(id) {
 
   const wrap = el('div');
   wrap.append(el('div', { class: 'back', onclick: () => go('#/my') }, '→ ' + t('back')));
-  wrap.append(el('h1', { class: 'page' }, pick(app.institutes.name)));
+  wrap.append(el('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' }, [
+    el('h1', { class: 'page', style: 'margin:6px 0' }, pick(app.institutes.name)),
+    el('span', { class: 'sp' }),
+    supportNumber() ? el('button', { class: 'btn accent sm', onclick: () => window.contactSupport() }, '🟢 ' + t('supportBtn')) : null,
+  ]));
 
   // progress summary
   const required = (reqs || []).filter(r => r.is_required !== false);
@@ -784,7 +810,8 @@ async function viewProfile() {
   wrap.append(el('h1', { class: 'page' }, t('profile')));
   wrap.append(el('div', { class: 'panel', style: 'max-width:520px' }, [
     el('label', {}, t('fullName')), name,
-    el('label', {}, t('phone')), phone,
+    el('label', {}, '🟢 ' + t('whatsapp')), phone,
+    el('div', { class: 'muted', style: 'font-size:13px' }, t('whatsappHint')),
     el('label', {}, t('country')), country,
     el('div', { class: 'muted', style: 'margin-top:10px' }, S.user.email),
     el('button', {
@@ -918,8 +945,13 @@ function mountAssistant() {
       body.scrollTop = body.scrollHeight;
     };
     input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+    const head = el('div', { class: 'chat-head' }, ['🎓 ', S.lang === 'ar' ? 'مرشد إيدولينك' : 'EduLink guide']);
+    if (supportNumber()) {
+      head.append(el('span', { class: 'sp', style: 'flex:1' }));
+      head.append(el('a', { class: 'link', style: 'font-size:13px;color:var(--accent);cursor:pointer', onclick: () => window.contactSupport() }, '🟢 ' + (S.lang === 'ar' ? 'دعم بشري' : 'Human support')));
+    }
     panel = el('div', { class: 'chat' }, [
-      el('div', { class: 'chat-head' }, ['🎓 ', S.lang === 'ar' ? 'مرشد إيدولينك' : 'EduLink guide']),
+      head,
       body,
       el('div', { class: 'chat-foot' }, [input, el('button', { class: 'btn sm', onclick: send }, '➤')]),
     ]);

@@ -14,6 +14,7 @@
 | `doc-review` | **مدير فقط** ⭐ أُصلح | `requireAdmin()` | service_role بعد التحقق |
 | `partner-deliver` | **مدير أو أتمتة داخلية** ⭐ أُصلح | `requireAdminOrService()` | service_role بعد التحقق |
 | `push-broadcast` | **مدير فقط** 🆕 | `requireAdmin()` | service_role بعد التحقق |
+| `whatsapp-notify` | **سرّ داخلي فقط** (Database Webhook) 🆕 | `hasServiceSecret()` | service_role بعد التحقق |
 
 ⭐ = كانت **بلا أي تحقق** قبل الإصلاح.
 
@@ -47,7 +48,13 @@ verify_jwt = true
 
 [functions.push-broadcast]
 verify_jwt = true
+
+[functions.whatsapp-notify]
+# يُستدعى من Database Webhook (بلا JWT) ويتحقق بسرّه الداخلي
+verify_jwt = false
 ```
+
+إشعارات ودعم واتساب موثّقة بالكامل في [`../../docs/واتساب.md`](../../docs/واتساب.md).
 
 ## النشر والأسرار
 ```bash
