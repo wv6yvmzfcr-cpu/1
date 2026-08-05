@@ -99,6 +99,26 @@ function money(myr) {
   return rm;
 }
 
+/* ---------- SEO: dynamic meta + structured data per route ---------- */
+function metaTag(key, isProp) {
+  const attr = isProp ? 'property' : 'name';
+  let m = document.head.querySelector(`meta[${attr}="${key}"]`);
+  if (!m) { m = document.createElement('meta'); m.setAttribute(attr, key); document.head.append(m); }
+  return m;
+}
+function setSeo({ title, desc, jsonld }) {
+  if (title) document.title = title;
+  if (desc) { metaTag('description').content = desc; metaTag('og:description', true).content = desc; }
+  if (title) metaTag('og:title', true).content = title;
+  metaTag('og:type', true).content = 'website';
+  let c = document.head.querySelector('link[rel="canonical"]');
+  if (!c) { c = document.createElement('link'); c.rel = 'canonical'; document.head.append(c); }
+  c.href = location.href;
+  let s = document.getElementById('ld-json');
+  if (!s) { s = document.createElement('script'); s.id = 'ld-json'; s.type = 'application/ld+json'; document.head.append(s); }
+  s.textContent = JSON.stringify(jsonld || { '@context': 'https://schema.org', '@type': 'EducationalOrganization', name: 'EduLink' });
+}
+
 /* ---------- toast ---------- */
 function toast(msg, kind = '') {
   const x = el('div', { class: 'toast ' + kind, html: msg });
@@ -198,6 +218,11 @@ function route() {
 
 /* ---------- HOME (institutes) ---------- */
 async function viewHome() {
+  setSeo({
+    title: S.lang === 'ar' ? 'معاهد اللغة الإنجليزية في ماليزيا — قارن وسجّل | إيدولينك' : 'English language institutes in Malaysia | EduLink',
+    desc: S.lang === 'ar' ? 'قارن معاهد اللغة الإنجليزية المعتمدة في ماليزيا بأسعار واضحة، وقدّم طلبك وتابعه خطوة بخطوة حتى الوصول.' : 'Compare accredited English language institutes in Malaysia with clear pricing, and track your application step by step.',
+    jsonld: { '@context': 'https://schema.org', '@type': 'WebSite', name: 'EduLink', inLanguage: S.lang, potentialAction: { '@type': 'SearchAction', target: location.origin + location.pathname + '#/?q={q}', 'query-input': 'required name=q' } },
+  });
   spinner();
   const { data: insts, error } = await S.sb.from('institutes').select('*').eq('is_active', true).order('sort_order');
   if (error) return mount(el('div', { class: 'empty' }, 'تعذّر تحميل المعاهد: ' + error.message));
@@ -257,6 +282,17 @@ async function viewInstitute(slug) {
   spinner();
   const { data: i } = await S.sb.from('institutes').select('*').eq('slug', slug).maybeSingle();
   if (!i) return mount(el('div', { class: 'empty' }, '—'));
+  setSeo({
+    title: pick(i.name) + ' — ' + pick(i.city) + ' | إيدولينك',
+    desc: (pick(i.description) || '').slice(0, 160),
+    jsonld: {
+      '@context': 'https://schema.org', '@type': 'Course', name: pick(i.name),
+      description: (pick(i.description) || '').slice(0, 300),
+      provider: { '@type': 'EducationalOrganization', name: pick(i.name), areaServed: pick(i.city) },
+      inLanguage: S.lang,
+      ...(i.price_month_myr ? { offers: { '@type': 'Offer', price: i.price_month_myr, priceCurrency: 'MYR' } } : {}),
+    },
+  });
   const wrap = el('div');
   wrap.append(el('div', { class: 'back', onclick: () => go('#/') }, '→ ' + t('back')));
   if (i.images && i.images.length) {
@@ -390,6 +426,14 @@ async function viewHow() {
   ]);
   const cfg = Object.fromEntries((cfgRows || []).map(c => [c.key, c.value]));
   const eta = etaToVisa(steps || []);
+  setSeo({
+    title: (S.lang === 'ar' ? 'رحلة التقديم والدراسة في ماليزيا — الدليل الكامل | إيدولينك' : 'Study in Malaysia — full application guide | EduLink'),
+    desc: (S.lang === 'ar' ? 'كل خطوات التقديم ومدتها، مسار التأشيرة (EMGS)، والوقت المتوقع حتى صدور الفيزا — دليل شامل بلا تعقيد.' : 'Every application step and its duration, the visa (EMGS) path, and the estimated time to your visa.'),
+    jsonld: (faqs && faqs.length) ? {
+      '@context': 'https://schema.org', '@type': 'FAQPage', inLanguage: S.lang,
+      mainEntity: faqs.slice(0, 10).map(f => ({ '@type': 'Question', name: pick(f.question), acceptedAnswer: { '@type': 'Answer', text: pick(f.answer) } })),
+    } : undefined,
+  });
 
   const wrap = el('div');
   wrap.append(el('div', { class: 'hero' }, [

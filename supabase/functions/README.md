@@ -15,6 +15,8 @@
 | `partner-deliver` | **مدير أو أتمتة داخلية** ⭐ أُصلح | `requireAdminOrService()` | service_role بعد التحقق |
 | `push-broadcast` | **مدير فقط** 🆕 | `requireAdmin()` | service_role بعد التحقق |
 | `whatsapp-notify` | **سرّ داخلي فقط** (Database Webhook) 🆕 | `hasServiceSecret()` | service_role بعد التحقق |
+| `seo-autopilot` | **سرّ داخلي (cron) أو مدير** 🆕 | `hasServiceSecret()`/`requireAdmin()` | service_role بعد التحقق |
+| `sitemap-xml` | **عام** (محركات البحث) 🆕 | لا مصادقة (إخراج عام فقط) | service_role داخلياً |
 
 ⭐ = كانت **بلا أي تحقق** قبل الإصلاح.
 
@@ -52,7 +54,17 @@ verify_jwt = true
 [functions.whatsapp-notify]
 # يُستدعى من Database Webhook (بلا JWT) ويتحقق بسرّه الداخلي
 verify_jwt = false
+
+[functions.seo-autopilot]
+# يُستدعى من pg_cron بسرّه الداخلي (أو مدير)
+verify_jwt = false
+
+[functions.sitemap-xml]
+# عام لمحركات البحث
+verify_jwt = false
 ```
+
+أتمتة SEO موثّقة بالكامل في [`../../docs/seo.md`](../../docs/seo.md).
 
 إشعارات ودعم واتساب موثّقة بالكامل في [`../../docs/واتساب.md`](../../docs/واتساب.md).
 
