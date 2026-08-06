@@ -1,0 +1,230 @@
+{
+  "app_name": "EduLink Malaysia",
+  "home": {
+    "title": "Language Institutes",
+    "search": "Search institutes...",
+    "featured_ads": "Featured housing & services",
+    "view_grid": "Grid",
+    "view_list": "List",
+    "per_week": "per week",
+    "empty": "No institutes match your filters. Try adjusting them."
+  },
+  "filters": {
+    "title": "Filters",
+    "city": "City",
+    "all_cities": "All cities",
+    "max_price": "Max weekly price",
+    "duration": "Course duration (weeks)",
+    "apply": "Apply",
+    "reset": "Reset"
+  },
+  "institute": {
+    "about": "About the institute",
+    "features": "Highlights",
+    "apply_now": "Apply now",
+    "weeks": "Number of weeks",
+    "start_month": "Starting month",
+    "notes": "Additional notes (optional)",
+    "submit": "Submit application",
+    "submitted": "Application sent! Track updates in your profile.",
+    "login_required": "Please sign in to submit an application"
+  },
+  "listings": {
+    "title": "Housing & Services",
+    "per_month": "per month",
+    "contact_whatsapp": "Chat on WhatsApp",
+    "wa_message": "Hi! I saw your listing \"{{title}}\" on the EduLink app and I'd like more details.",
+    "features": "Features"
+  },
+  "auth": {
+    "login": "Sign in",
+    "register": "Create account",
+    "email": "Email",
+    "password": "Password",
+    "full_name": "Full name",
+    "forgot": "Forgot password?",
+    "reset_sent": "Reset link sent to your email.",
+    "send_reset": "Send reset link",
+    "no_account": "No account yet?",
+    "have_account": "Already have an account?",
+    "logout": "Sign out",
+    "check_email": "Check your email to confirm your account."
+  },
+  "profile": {
+    "title": "My profile",
+    "my_applications": "My applications",
+    "no_applications": "You haven't submitted any application yet.",
+    "language": "App language",
+    "currency": "Currency",
+    "delete_account": "Delete account permanently",
+    "delete_confirm_title": "Delete account",
+    "delete_confirm_body": "Your account and all your data will be deleted immediately and permanently. This cannot be undone.",
+    "delete_yes": "Yes, delete my account",
+    "cancel": "Cancel",
+    "status": {
+      "documents": "Preparing documents",
+      "review": "Under review",
+      "submitted": "Sent to institute",
+      "offer": "Offer letter",
+      "payment": "Payment",
+      "visa": "Visa/EMGS",
+      "ticket": "Travel",
+      "completed": "Completed",
+      "rejected": "Rejected",
+      "pending": "Pending",
+      "reviewing": "Reviewing",
+      "accepted": "Accepted"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error_title": "Something went wrong",
+    "error_network": "Couldn't connect. Check your internet and try again.",
+    "retry": "Retry",
+    "share": "Share",
+    "restart_needed": "The app will restart to apply the new text direction."
+  },
+  "wizard": {
+    "title": "Registration wizard",
+    "required": "Required",
+    "progress": "Completed {{done}} of {{total}} requirements",
+    "pick_file": "Choose & upload file",
+    "replace_file": "Replace file ✓",
+    "invalid_format": "File format not accepted. Allowed: {{formats}}",
+    "invalid_size": "File exceeds the {{mb}} MB limit. Compress it and try again.",
+    "passport_short": "⛔ Your passport is valid for less than {{months}} months — a core EMGS rule, so your file would be rejected. Fix: renew your passport first, then come back and continue.",
+    "finish": "Submit complete file for review",
+    "submitted": "Your file is complete! It moved to review — track it on the application screen.",
+    "pick_date": "Tap to pick the date"
+  },
+  "tracker": {
+    "current_step": "Your current step",
+    "your_action": "What you need to do now:",
+    "eta": "Expected: ~{{days}} days",
+    "fix_needed": "Documents needing a fix",
+    "pipeline": "Your application journey",
+    "faq_title": "Questions relevant at this step"
+  },
+  "assistant": {
+    "title": "EduLink Guide",
+    "subtitle": "Knows your application and replies in your language",
+    "open": "Ask the smart guide",
+    "placeholder": "Type your question...",
+    "typing": "Guide is typing...",
+    "empty": "Try one of these:",
+    "suggestions": [
+      "What's missing in my file right now?",
+      "Do I need a visa before traveling?",
+      "How do I pay the fees safely?",
+      "When does the offer letter arrive?"
+    ]
+  },
+  "mdac": {
+    "title": "Digital Arrival Card (MDAC)",
+    "description": "A mandatory government step for every traveler to Malaysia — separate from a visa and required even when visa-exempt. Skipping it causes airport delays.",
+    "need_arrival": "Enter your arrival date and flight number above first, so we open this step at the right time.",
+    "open_now": "Open now",
+    "opens_in": "Opens in {{days}} days",
+    "dont_early": "⚠️ Don't submit yet — the government portal only accepts it within 3 days before arrival and rejects earlier submissions. We'll remind you when the window opens.",
+    "scam_warning": "⚠️ Submission is completely free on the official portal only. Any site charging a fee is a scam.",
+    "open_portal": "Open official portal & submit",
+    "after_submit": "After submitting you'll get a QR code and reference. Enter it here (optional) to save it:",
+    "ref_placeholder": "Reference number / MDAC code",
+    "mark_done": "I've submitted the card ✓",
+    "completed": "Submitted. Keep the QR code on your phone for the airport.",
+    "saved": "Arrival card status saved. Safe travels!"
+  },
+  "photo": {
+    "tips_title": "For best results:",
+    "tips": [
+      "Center your face and keep it clear",
+      "Good lighting on the face, no shadows",
+      "Look straight at the camera, neutral expression",
+      "No sunglasses; head covering fine if face is visible"
+    ],
+    "capture": "Take photo",
+    "upload": "Upload photo",
+    "permission": "We need camera/gallery permission for this step.",
+    "processing": "Preparing your photo...",
+    "processing_hint": "Removing the background and making it white at the right size",
+    "result_ready": "Your photo is ready with a white background 👇",
+    "use_this": "Use this photo",
+    "retake": "Try again",
+    "failed": "Processing failed. Try a clearer photo or retry.",
+    "ready": "Photo ready and compliant",
+    "success": "Photo approved ✓"
+  },
+  "consent": {
+    "title": "Share your file with the institute",
+    "body": "To complete your enrollment, {{partner}} needs to review your file. We share nothing before your approval.",
+    "will_share": "Only the following will be shared:",
+    "items": [
+      "Your name and contact details",
+      "Approved documents (passport, photo, certificate)",
+      "Requested course details (duration and start month)"
+    ],
+    "revocable": "You can revoke consent anytime; the institute's access stops immediately.",
+    "approve": "I agree to share my file",
+    "granted_title": "Your file has been shared",
+    "granted_body": "{{partner}} can now review your file to complete the enrollment.",
+    "revoke_link": "Revoke consent",
+    "revoke_title": "Revoke consent",
+    "revoke_body": "The institute's access stops immediately and your enrollment may stall. Are you sure?",
+    "revoke_yes": "Yes, revoke"
+  },
+  "price": {
+    "month": "per month",
+    "on_request": "Price on request",
+    "badge_estimated": "Estimated",
+    "badge_confirmed": "Confirmed",
+    "range": "Market range: {{min}} — {{max}}",
+    "extra_fees": "Mandatory extra fees",
+    "fees_note": "These are paid once at registration (unless stated otherwise) and confirmed in your offer letter.",
+    "final_title": "Your final price",
+    "you_saw": "Price shown when you applied",
+    "you_saw_estimate": "Estimate shown when you applied",
+    "final_price": "Confirmed final price",
+    "higher_by": "{{amount}} higher than the estimate — expected, as prices shift by season.",
+    "lower_by": "{{amount}} lower than the estimate 🎉",
+    "matched": "✓ Exactly matches the price shown"
+  },
+  "legal": {
+    "agree_prefix": "I have read and agree to the",
+    "terms": "Terms of Use",
+    "privacy": "Privacy Policy",
+    "and": "and",
+    "section": "Legal",
+    "must_agree": "You must agree to the Terms and Privacy Policy to continue"
+  },
+  "seo": {
+    "home_title": "Курсы английского в Малайзии — цены и отзывы | EduLink",
+    "home_desc": "Полный гид по языковым школам Куала-Лумпура: прозрачные цены, реальные рейтинги Google, подтверждённая аккредитация.",
+    "hero_h1": "Изучайте английский в Малайзии — без сюрпризов",
+    "hero_sub": "Проверенные школы, цены со всеми сборами и понятные шаги визы.",
+    "hero_cta": "Смотреть школы",
+    "featured": "Проверенные школы",
+    "see_all": "Все школы",
+    "list_title": "Курсы английского в Малайзии — полный список | EduLink",
+    "list_h1": "Языковые школы в Малайзии",
+    "list_desc": "{{count}} языковых школ в Куала-Лумпуре с реальными рейтингами Google и прозрачными ценами.",
+    "list_intro": "Школы, которые мы отобрали и чью аккредитацию проверили.",
+    "inst_title": "Цены, программы и поступление в {{city}}",
+    "inst_desc": "{{name}} в {{city}} — рейтинг {{rating}} из {{count}} отзывов. Полные цены и требования визы.",
+    "accredited": "Аккредитация",
+    "programs": "Программы",
+    "details": "Информация",
+    "hours": "Часов в неделю",
+    "levels": "Уровней",
+    "age": "Возраст",
+    "address": "Адрес",
+    "official_site": "Официальный сайт",
+    "blog_title": "Блог EduLink",
+    "blog_h1": "Гиды и статьи",
+    "blog_desc": "Всё об изучении английского в Малайзии.",
+    "blog_empty": "Статей пока нет."
+  },
+  "nav": {
+    "home": "Главная",
+    "institutes": "Школы"
+  }
+}

@@ -1,0 +1,38 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# expo
+.expo/
+dist/
+web-build/
+*.orig.*
+
+# native
+*.apk
+*.ipa
+*.aab
+
+# env & secrets
+.env
+.env.*
+!.env.example
+
+# supabase local
+supabase/.branches
+supabase/.temp
+supabase/.env
+
+# logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.log
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

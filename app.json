@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "EduLink MY",
+    "slug": "edulink-my",
+    "scheme": "edulink",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "extra": {
+      "supabaseUrl": "https://YOUR_PROJECT.supabase.co",
+      "supabaseAnonKey": "YOUR_ANON_KEY",
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.edulink.my",
+      "supportsTablet": true,
+      "associatedDomains": [
+        "applinks:edulink.app"
+      ]
+    },
+    "android": {
+      "package": "com.edulink.my",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "edulink.app",
+              "pathPrefix": "/"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-localization",
+      "expo-notifications"
+    ],
+    "web": {
+      "output": "static",
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
