@@ -50,8 +50,10 @@ const T = {
     usually: 'عادةً', daysUnit: 'يوم', weeksUnit: 'أسبوع', totalEta: 'الوقت المتوقع حتى صدور التأشيرة',
     visaPathT: 'مسار تأشيرتك', estimateNote: 'تقديري — قد يختلف حسب حالتك والجهات الرسمية.',
     visaStates: 'حالات التأشيرة المحتملة', scenarios: 'أشياء قد تواجهها (وكيف نعالجها)',
-    startNow: 'ابدأ التقديم الآن', checkPath: 'اعرف مسارك: كم أسبوعاً تنوي الدراسة؟',
+    startNow: 'ابدأ التقديم الآن', checkPath: 'اعرف مسارك: كم مدة دراستك؟',
     theSteps: 'خطوات التقديم', commonQs: 'أسئلة شائعة',
+    duration: 'مدة الدراسة', unit_week: 'أسبوع', unit_month: 'شهر', unit_year: 'سنة',
+    rangeIs: 'المدة المتاحة لهذا المعهد', exempt: 'إعفاء من التأشيرة', emgsVisa: 'تأشيرة عبر EMGS',
     whatsapp: 'رقم واتساب', whatsappHint: 'نرسل لك تحديثات طلبك على واتساب، ومنه تتواصل مع الدعم.',
     supportBtn: 'تواصل مع الدعم (واتساب)', humanSupport: 'أو كلّم موظفاً عبر واتساب',
   },
@@ -77,8 +79,10 @@ const T = {
     usually: 'usually', daysUnit: 'days', weeksUnit: 'weeks', totalEta: 'Estimated time until your visa is issued',
     visaPathT: 'Your visa path', estimateNote: 'An estimate — it varies by your case and the authorities.',
     visaStates: 'Possible visa states', scenarios: 'Things you might face (and how we handle them)',
-    startNow: 'Start applying', checkPath: 'Find your path: how many weeks will you study?',
+    startNow: 'Start applying', checkPath: 'Find your path: how long will you study?',
     theSteps: 'Application steps', commonQs: 'Common questions',
+    duration: 'Study duration', unit_week: 'week(s)', unit_month: 'month(s)', unit_year: 'year(s)',
+    rangeIs: 'Available duration for this institute', exempt: 'visa-exempt', emgsVisa: 'EMGS visa',
     whatsapp: 'WhatsApp number', whatsappHint: 'We send application updates on WhatsApp, and you reach support from it.',
     supportBtn: 'Contact support (WhatsApp)', humanSupport: 'Or chat with a human on WhatsApp',
   },
@@ -323,14 +327,27 @@ async function viewApply(slug) {
   const { data: i } = await S.sb.from('institutes').select('*').eq('slug', slug).maybeSingle();
   if (!i) return mount(el('div', { class: 'empty' }, '—'));
 
-  const weeks = el('input', { type: 'number', min: i.min_weeks || 4, max: i.max_weeks || 48, value: i.min_weeks || 4 });
+  const minW = i.min_weeks || 4, maxW = i.max_weeks || 48;
+  const amount = el('input', { type: 'number', min: 1, value: 1, style: 'flex:2' });
+  const unit = unitSelect('month'); unit.style.flex = '1';
+  const dpre = el('div', { class: 'muted', style: 'font-size:13.5px;margin-top:6px' });
+  const refreshDur = () => {
+    const w = toWeeks(amount.value, unit.value);
+    const vp = visaPath(w);
+    dpre.innerHTML = `≈ <b>${w}</b> ${t('weeksUnit')} · ${vp.short ? '🟢 ' + t('exempt') : '🛂 ' + t('emgsVisa')}`;
+  };
+  amount.addEventListener('input', refreshDur); unit.addEventListener('change', refreshDur); refreshDur();
+
   const start = el('input', { type: 'month' });
   const wa = el('input', { type: 'tel', placeholder: '9665xxxxxxxx', value: S.profile?.phone || '' });
   const wrap = el('div');
   wrap.append(el('div', { class: 'back', onclick: () => go('#/institute/' + slug) }, '→ ' + t('back')));
   wrap.append(el('div', { class: 'panel', style: 'max-width:560px' }, [
     el('h1', { class: 'page', style: 'margin-top:0' }, t('applyTo') + ' ' + pick(i.name)),
-    el('label', {}, t('weeks') + ' *'), weeks,
+    el('label', {}, t('duration') + ' *'),
+    el('div', { class: 'row' }, [amount, unit]),
+    dpre,
+    el('div', { class: 'muted', style: 'font-size:12.5px;margin-top:2px' }, `${t('rangeIs')}: ${minW}–${maxW} ${t('weeksUnit')}`),
     el('label', {}, t('startMonth') + ' *'), start,
     el('div', { class: 'muted', style: 'font-size:13px;margin-top:4px' }, t('startTip')),
     el('label', {}, '🟢 ' + t('whatsapp') + ' *'), wa,
@@ -338,6 +355,8 @@ async function viewApply(slug) {
     el('button', {
       class: 'btn accent block', style: 'margin-top:20px',
       onclick: async (e) => {
+        const wks = toWeeks(amount.value, unit.value);
+        if (wks < minW || wks > maxW) return toast(`${t('rangeIs')}: ${minW}–${maxW} ${t('weeksUnit')}`, 'err');
         if (!start.value) return toast(S.lang === 'ar' ? 'اختر شهر البدء' : 'Pick a start month', 'err');
         if (!wa.value.trim()) return toast(S.lang === 'ar' ? 'أدخل رقم واتساب لنرسل لك التحديثات' : 'Enter your WhatsApp number', 'err');
         const btn = e.target; btn.disabled = true;
@@ -345,7 +364,7 @@ async function viewApply(slug) {
         await S.sb.from('profiles').update({ phone: wa.value.trim() }).eq('id', S.user.id);
         const startDate = start.value + '-01';
         const { data, error } = await S.sb.from('applications').insert({
-          user_id: S.user.id, institute_id: i.id, weeks: Number(weeks.value),
+          user_id: S.user.id, institute_id: i.id, weeks: wks,
           start_month: startDate, lang: S.lang,
         }).select('id').single();
         btn.disabled = false;
@@ -389,6 +408,22 @@ function statusBadge(s) {
 }
 
 /* ---------- visa path + duration helpers ---------- */
+const WEEKS_PER_MONTH = 4.33, WEEKS_PER_YEAR = 52;
+function toWeeks(amount, unit) {
+  amount = Number(amount) || 0;
+  if (unit === 'month') return Math.round(amount * WEEKS_PER_MONTH);
+  if (unit === 'year') return Math.round(amount * WEEKS_PER_YEAR);
+  return Math.round(amount);
+}
+function unitSelect(def = 'month') {
+  const s = el('select', {}, [
+    el('option', { value: 'week' }, t('unit_week')),
+    el('option', { value: 'month' }, t('unit_month')),
+    el('option', { value: 'year' }, t('unit_year')),
+  ]);
+  s.value = def;
+  return s;
+}
 function visaPath(weeks) {
   const days = (weeks || 0) * 7;
   if (days > 0 && days <= 90) return {
@@ -442,25 +477,28 @@ async function viewHow() {
     el('button', { class: 'btn', onclick: () => go('#/') }, t('startNow')),
   ]));
 
-  // interactive visa-path calculator
-  const weeksInp = el('input', { type: 'number', min: 1, value: 8, style: 'max-width:110px' });
+  // interactive visa-path calculator (choose by week / month / year)
+  const calcAmt = el('input', { type: 'number', min: 1, value: 3, style: 'max-width:90px' });
+  const calcUnit = unitSelect('month'); calcUnit.style.maxWidth = '120px';
   const pathBox = el('div', { style: 'margin-top:12px' });
   const drawPath = () => {
-    const p = visaPath(Number(weeksInp.value) || 0);
+    const w = toWeeks(calcAmt.value, calcUnit.value);
+    const p = visaPath(w);
     pathBox.innerHTML = '';
     pathBox.append(el('div', { class: 'action' }, [
       el('b', {}, (p.short ? '🟢 ' : '🛂 ') + p.title),
-      el('p', { style: 'margin:.4em 0 0' }, p.body),
+      el('p', { style: 'margin:.4em 0 0' }, `${p.body} (≈ ${w} ${t('weeksUnit')})`),
     ]));
   };
-  weeksInp.addEventListener('input', drawPath);
+  calcAmt.addEventListener('input', drawPath); calcUnit.addEventListener('change', drawPath);
   wrap.append(el('div', { class: 'panel' }, [
     el('h3', { style: 'margin-top:0' }, '🛂 ' + t('visaPathT')),
     el('label', {}, t('checkPath')),
-    el('div', { class: 'row', style: 'align-items:center' }, [weeksInp, el('span', { class: 'muted' }, t('weeksUnit'))]),
+    el('div', { class: 'row', style: 'align-items:center' }, [calcAmt, calcUnit]),
     pathBox,
     el('div', { class: 'muted', style: 'font-size:12.5px;margin-top:6px' }, 'ℹ️ ' + t('estimateNote')),
   ]));
+  drawPath();
 
   // expected total time to visa
   if (eta > 0) {
