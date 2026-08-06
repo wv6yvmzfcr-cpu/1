@@ -91,6 +91,10 @@ const t = k => (T[S.lang] && T[S.lang][k]) || T.ar[k] || k;
 const pick = o => { if (o == null) return ''; if (typeof o !== 'object') return String(o);
   return o[S.lang] || o.ar || o.en || Object.values(o).find(Boolean) || ''; };
 
+// أعمدة المعهد العامة — لا نكشف رقم المعهد (whatsapp) ولا موقعه للطالب،
+// حتى لا يتواصل معه مباشرةً ويتجاوز المنصّة. التسجيل يتم عبر المنصّة فقط.
+const INST_COLS = 'id,slug,name,description,city,city_key,price_month_myr,price_estimated,price_note,tags,images,min_weeks,max_weeks,is_active,sort_order';
+
 /* ---------- money ---------- */
 function money(myr) {
   if (myr == null) return '—';
@@ -228,7 +232,7 @@ async function viewHome() {
     jsonld: { '@context': 'https://schema.org', '@type': 'WebSite', name: 'EduLink', inLanguage: S.lang, potentialAction: { '@type': 'SearchAction', target: location.origin + location.pathname + '#/?q={q}', 'query-input': 'required name=q' } },
   });
   spinner();
-  const { data: insts, error } = await S.sb.from('institutes').select('*').eq('is_active', true).order('sort_order');
+  const { data: insts, error } = await S.sb.from('institutes').select(INST_COLS).eq('is_active', true).order('sort_order');
   if (error) return mount(el('div', { class: 'empty' }, 'تعذّر تحميل المعاهد: ' + error.message));
   const list = insts || [];
   const cities = [...new Map(list.map(i => [i.city_key, pick(i.city)])).entries()];
@@ -284,7 +288,7 @@ function instituteCard(i) {
 /* ---------- INSTITUTE DETAIL ---------- */
 async function viewInstitute(slug) {
   spinner();
-  const { data: i } = await S.sb.from('institutes').select('*').eq('slug', slug).maybeSingle();
+  const { data: i } = await S.sb.from('institutes').select(INST_COLS).eq('slug', slug).maybeSingle();
   if (!i) return mount(el('div', { class: 'empty' }, '—'));
   setSeo({
     title: pick(i.name) + ' — ' + pick(i.city) + ' | إيدولينك',
@@ -314,7 +318,6 @@ async function viewInstitute(slug) {
     (i.tags && i.tags.length) ? el('div', { class: 'tags' }, i.tags.map(x => el('span', { class: 'tag' }, pick(x)))) : null,
     el('div', { class: 'row', style: 'margin-top:20px' }, [
       el('button', { class: 'btn accent', onclick: () => go('#/apply/' + i.slug) }, t('apply')),
-      i.whatsapp ? el('a', { class: 'btn ghost', href: 'https://wa.me/' + i.whatsapp, target: '_blank' }, '🟢 ' + t('contact')) : null,
     ]),
   ]));
   mount(wrap);
@@ -324,7 +327,7 @@ async function viewInstitute(slug) {
 async function viewApply(slug) {
   if (!S.user) { openAuth('#/apply/' + slug); return; }
   spinner();
-  const { data: i } = await S.sb.from('institutes').select('*').eq('slug', slug).maybeSingle();
+  const { data: i } = await S.sb.from('institutes').select(INST_COLS).eq('slug', slug).maybeSingle();
   if (!i) return mount(el('div', { class: 'empty' }, '—'));
 
   const minW = i.min_weeks || 4, maxW = i.max_weeks || 48;
