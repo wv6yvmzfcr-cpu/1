@@ -93,7 +93,7 @@ const pick = o => { if (o == null) return ''; if (typeof o !== 'object') return 
 
 // أعمدة المعهد العامة — لا نكشف رقم المعهد (whatsapp) ولا موقعه للطالب،
 // حتى لا يتواصل معه مباشرةً ويتجاوز المنصّة. التسجيل يتم عبر المنصّة فقط.
-const INST_COLS = 'id,slug,name,description,city,city_key,price_month_myr,price_estimated,price_note,tags,images,min_weeks,max_weeks,is_active,sort_order';
+const INST_COLS = 'id,slug,name,description,city,city_key,price_month_myr,price_estimated,price_note,tags,images,min_weeks,max_weeks,is_active,sort_order,rating,rating_count';
 
 /* ---------- money ---------- */
 function money(myr) {
@@ -192,13 +192,15 @@ function renderHeader() {
   area.innerHTML = '';
   $('#langBtn').textContent = S.lang === 'ar' ? 'EN' : 'ع';
   if (S.user) {
+    const initial = ((S.profile?.full_name || S.user.email || '؟').trim()[0] || '؟').toUpperCase();
     area.append(
-      el('a', { class: 'link', onclick: () => go('#/my') }, t('myApps')),
-      el('button', { class: 'btn ghost sm', onclick: doLogout }, t('logout')),
+      el('a', { class: 'desk-only', onclick: () => go('#/my'), style: 'font-weight:800;color:var(--muted);padding:8px 12px;border-radius:10px' }, t('myApps')),
+      el('div', { class: 'avatar', onclick: () => go('#/profile'), title: S.user.email }, initial),
     );
   } else {
-    area.append(el('button', { class: 'btn sm', onclick: openAuth }, t('login')));
+    area.append(el('button', { class: 'btn sm', onclick: () => openAuth() }, t('login')));
   }
+  updateNav();
 }
 $('#langBtn').onclick = () => {
   S.lang = S.lang === 'ar' ? 'en' : 'ar';
@@ -210,7 +212,15 @@ $('#langBtn').onclick = () => {
 
 /* ---------- router ---------- */
 function go(hash) { location.hash = hash; }
+window.tabAccount = () => (S.user ? go('#/profile') : openAuth('#/profile'));
+function updateNav() {
+  const h = location.hash || '#/';
+  const base = (h.startsWith('#/institute') || h.startsWith('#/apply')) ? '#/'
+    : h.startsWith('#/app/') ? '#/my' : h;
+  document.querySelectorAll('.navlinks a, .tabbar a').forEach(a => a.classList.toggle('on', a.dataset.r === base));
+}
 function route() {
+  updateNav();
   const h = location.hash || '#/';
   const m = (re) => (h.match(re) || [])[1];
   if (h === '#/' || h === '') return viewHome();
@@ -238,11 +248,19 @@ async function viewHome() {
   const cities = [...new Map(list.map(i => [i.city_key, pick(i.city)])).entries()];
 
   const wrap = el('div');
-  wrap.append(el('div', { class: 'hero' }, [
+  const stat = (b, s) => el('div', { class: 'st' }, [el('b', {}, b), el('span', {}, s)]);
+  wrap.append(el('div', { class: 'hero' }, el('div', { class: 'in' }, [
+    el('div', { class: 'kicker' }, '🇲🇾 ' + (S.lang === 'ar' ? 'دراسة معتمدة في ماليزيا' : 'Accredited study in Malaysia')),
     el('h1', {}, t('heroTitle')),
     el('p', {}, t('heroSub')),
-    el('button', { class: 'btn', onclick: () => document.getElementById('list').scrollIntoView({ behavior: 'smooth' }) }, t('browse')),
-  ]));
+    el('button', { class: 'btn', onclick: () => document.getElementById('list').scrollIntoView({ behavior: 'smooth' }) }, t('browse') + ' ←'),
+    el('div', { class: 'hero-stats' }, [
+      stat(String(list.length), S.lang === 'ar' ? 'معهد معتمد' : 'institutes'),
+      stat('8', S.lang === 'ar' ? 'خطوات واضحة' : 'clear steps'),
+      stat('100%', S.lang === 'ar' ? 'متابعة لطلبك' : 'tracked'),
+    ]),
+  ])));
+  wrap.append(el('h2', { class: 'sec-title' }, t('institutes')));
 
   const state = { city: '', sort: 'low' };
   const citySel = el('select', { onchange: e => { state.city = e.target.value; draw(); } }, [
@@ -273,14 +291,22 @@ async function viewHome() {
 }
 
 function instituteCard(i) {
-  const tags = (i.tags || []).slice(0, 3).map(x => el('span', { class: 'tag' }, pick(x)));
+  const tags = (i.tags || []).slice(0, 2).map(x => el('span', { class: 'tag' }, pick(x)));
+  const nm = pick(i.name);
+  const media = el('div', { class: 'media' }, (i.images && i.images[0])
+    ? el('img', { src: i.images[0], alt: nm, loading: 'lazy' })
+    : el('span', { class: 'mono' }, (nm.replace(/^(معهد|مركز)\s*/, '')[0] || '🏫')));
+  if (i.rating) media.append(el('div', { class: 'rate' }, [el('span', { class: 'star' }, '★'), String(i.rating), i.rating_count ? el('small', { style: 'opacity:.8;font-weight:600' }, ` (${i.rating_count})`) : null]));
   return el('div', { class: 'card', onclick: () => go('#/institute/' + i.slug) }, [
-    el('div', { class: 'thumb' }, (i.images && i.images[0]) ? el('img', { src: i.images[0], style: 'height:100%;width:100%;object-fit:cover', alt: pick(i.name) }) : '🏫'),
+    media,
     el('div', { class: 'body' }, [
-      el('h3', {}, pick(i.name)),
+      el('h3', {}, nm),
       el('div', { class: 'city' }, '📍 ' + pick(i.city)),
-      el('div', { class: 'tags' }, tags),
-      el('div', { class: 'price', html: money(i.price_month_myr) + ` <small>${t('perMonth')}</small>` + (i.price_estimated ? `<span class="est">${t('estimated')}</span>` : '') }),
+      tags.length ? el('div', { class: 'tags' }, tags) : null,
+      el('div', { class: 'foot' }, [
+        el('div', { class: 'price', html: `<b>${money(i.price_month_myr)}</b> <small>${t('perMonth')}</small>` + (i.price_estimated ? `<span class="est">${t('estimated')}</span>` : '') }),
+        el('div', { class: 'go' }, '←'),
+      ]),
     ]),
   ]);
 }
@@ -907,6 +933,7 @@ async function viewProfile() {
         toast(error ? error.message : t('ok'), error ? 'err' : 'ok');
       },
     }, t('save')),
+    el('button', { class: 'btn ghost block', style: 'margin-top:10px', onclick: () => go('#/my') }, '📝 ' + t('myApps')),
     el('button', { class: 'btn ghost block', style: 'margin-top:10px', onclick: doLogout }, t('logout')),
   ]));
   mount(wrap);
