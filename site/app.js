@@ -54,6 +54,14 @@ const T = {
     theSteps: 'خطوات التقديم', commonQs: 'أسئلة شائعة',
     duration: 'مدة الدراسة', unit_week: 'أسبوع', unit_month: 'شهر', unit_year: 'سنة',
     rangeIs: 'المدة المتاحة لهذا المعهد', exempt: 'إعفاء من التأشيرة', emgsVisa: 'تأشيرة عبر EMGS',
+    docsIntro: 'جهّز مستنداتك خطوة بخطوة. نراجعها ونقدّمها للمعهد، ثم نعود لك بخطاب القبول لاستكمال باقي الإجراءات.',
+    ready: 'الجاهز', scan: 'صوّر', uploadFile: 'رفع ملف', redo: 'إعادة', readyBadge: 'جاهز',
+    allPages: 'صوّر كل صفحات الجواز الداخلية بوضوح', submitDocs: 'أرسل مستنداتي للمراجعة',
+    completeFirst: 'أكمل كل المستندات أولاً', docsDoneTitle: 'تم استلام مستنداتك',
+    docsDoneBody: 'سنراجع مستنداتك ونقدّمها للمعهد. سنعود لك بخطاب القبول لاستكمال الإجراءات الأخرى.',
+    capture: 'التقط', addPage: 'صفحة أخرى', saveDoc: 'تم — احفظ', lightGood: 'الإضاءة جيدة',
+    lightLow: 'قرّب الإضاءة أكثر', alignHint: 'حاذِ المستند داخل الإطار', building: 'جارٍ التجهيز…',
+    camFail: 'تعذّر فتح الكاميرا — استخدم «رفع ملف».', pageWord: 'صفحة',
     whatsapp: 'رقم واتساب', whatsappHint: 'نرسل لك تحديثات طلبك على واتساب، ومنه تتواصل مع الدعم.',
     supportBtn: 'تواصل مع الدعم (واتساب)', humanSupport: 'أو كلّم موظفاً عبر واتساب',
   },
@@ -83,6 +91,14 @@ const T = {
     theSteps: 'Application steps', commonQs: 'Common questions',
     duration: 'Study duration', unit_week: 'week(s)', unit_month: 'month(s)', unit_year: 'year(s)',
     rangeIs: 'Available duration for this institute', exempt: 'visa-exempt', emgsVisa: 'EMGS visa',
+    docsIntro: 'Prepare your documents step by step. We review and submit them to the institute, then return with your offer letter.',
+    ready: 'Ready', scan: 'Scan', uploadFile: 'Upload', redo: 'Redo', readyBadge: 'Ready',
+    allPages: 'Capture every inner passport page clearly', submitDocs: 'Submit my documents',
+    completeFirst: 'Complete all documents first', docsDoneTitle: 'Documents received',
+    docsDoneBody: 'We will review your documents and submit them to the institute, then return with your offer letter.',
+    capture: 'Capture', addPage: 'Add page', saveDoc: 'Done — save', lightGood: 'Good lighting',
+    lightLow: 'Add more light', alignHint: 'Align the document inside the frame', building: 'Preparing…',
+    camFail: 'Camera unavailable — use Upload.', pageWord: 'page',
     whatsapp: 'WhatsApp number', whatsappHint: 'We send application updates on WhatsApp, and you reach support from it.',
     supportBtn: 'Contact support (WhatsApp)', humanSupport: 'Or chat with a human on WhatsApp',
   },
@@ -655,6 +671,9 @@ async function viewTracker(id) {
   const curIdx = STEP_ORDER.indexOf(app.status);
   const reload = () => viewTracker(id);
 
+  // المرحلة الأولى «تجهيز المستندات» — معالج نظيف مركّز بلا مشتتات
+  if (app.status === 'documents') return documentsWizard(app, reqs || [], docMap, reasonMap, reload);
+
   const wrap = el('div');
   wrap.append(el('div', { class: 'back', onclick: () => go('#/my') }, '→ ' + t('back')));
   wrap.append(el('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' }, [
@@ -810,6 +829,195 @@ function docRow(r, doc, reasonMap, app, reload) {
     }, t('save_text')));
   }
   return row;
+}
+
+/* ============================================================
+ * المرحلة الأولى: معالج تجهيز المستندات (نظيف، بلا مشتتات)
+ * ============================================================ */
+function documentsWizard(app, reqs, docMap, reasonMap, reload) {
+  const isReady = r => { const d = docMap[r.key]; return !!(d && d.status !== 'rejected' && (d.storage_path || d.value_text)); };
+  // مستندات هذه المرحلة فقط (نستبعد الموقوتة/الخارجية مثل MDAC)
+  const stageReqs = reqs.filter(r => { const v = r.validation || {}; return !v.time_gated && !v.external; });
+  const required = stageReqs.filter(r => r.is_required !== false);
+  const readyN = required.filter(isReady).length;
+  const allReady = required.length > 0 && readyN === required.length;
+
+  const wrap = el('div');
+  wrap.append(el('div', { class: 'back', onclick: () => go('#/my') }, '→ ' + t('back')));
+  wrap.append(el('div', { class: 'panel' }, [
+    el('h1', { class: 'page', style: 'margin:0 0 6px' }, pick(app.institutes.name)),
+    el('p', { class: 'muted', style: 'margin:0;font-size:14.5px' }, t('docsIntro')),
+    el('div', { style: 'margin-top:14px;display:flex;justify-content:space-between;font-size:14px' }, [
+      el('b', {}, t('ready')), el('span', { class: 'muted' }, `${readyN}/${required.length}`),
+    ]),
+    el('div', { style: 'height:10px;background:var(--surface-2);border-radius:20px;overflow:hidden;margin-top:6px' },
+      el('div', { style: `height:100%;width:${required.length ? Math.round(readyN / required.length * 100) : 0}%;background:var(--ok);transition:.4s` })),
+  ]));
+
+  let n = 0;
+  stageReqs.forEach(r => wrap.append(docStepCard(r, ++n, docMap[r.key], reasonMap, app, reload)));
+
+  const submit = el('button', {
+    class: 'btn accent block', disabled: allReady ? null : '',
+    onclick: async () => {
+      if (!allReady) return;
+      submit.disabled = true;
+      const { error } = await S.sb.from('applications').update({ status: 'review' }).eq('id', app.id);
+      if (error) { submit.disabled = false; return toast(error.message, 'err'); }
+      mount(el('div', { class: 'panel center', style: 'max-width:520px;margin:34px auto' }, [
+        el('div', { style: 'font-size:60px' }, '✅'),
+        el('h2', { style: 'margin:.2em 0;font-weight:900' }, t('docsDoneTitle')),
+        el('p', { class: 'muted' }, t('docsDoneBody')),
+        el('button', { class: 'btn block', style: 'margin-top:18px', onclick: () => go('#/my') }, t('myApps')),
+      ]));
+    },
+  }, allReady ? ('📨 ' + t('submitDocs')) : t('completeFirst'));
+  wrap.append(el('div', { class: 'panel' }, submit));
+  mount(wrap);
+}
+
+function docStepCard(r, num, doc, reasonMap, app, reload) {
+  const ready = !!(doc && doc.status !== 'rejected' && (doc.storage_path || doc.value_text));
+  const rejected = doc && doc.status === 'rejected';
+  const isFile = (r.input_type || 'file') === 'file';
+  const multi = r.key === 'passport';
+
+  const num_el = el('div', { style: `width:36px;height:36px;flex:0 0 36px;border-radius:50%;display:grid;place-items:center;font-weight:900;${ready ? 'background:var(--ok);color:#fff' : 'background:var(--surface-2);color:var(--muted)'}` }, ready ? '✓' : String(num));
+  const body = el('div', { style: 'flex:1;min-width:0' }, [
+    el('b', { style: 'font-size:16px' }, pick(r.name)),
+    r.description ? el('div', { class: 'muted', style: 'font-size:13.5px;margin:.3em 0' }, pick(r.description)) : null,
+    multi ? el('div', { class: 'muted', style: 'font-size:12.5px' }, '📄 ' + t('allPages')) : null,
+    (rejected && doc.rejection_key && reasonMap[doc.rejection_key])
+      ? el('div', { class: 'fix' }, [el('b', {}, '⚠️ ' + pick(reasonMap[doc.rejection_key].title) + ': '), pick(reasonMap[doc.rejection_key].fix)]) : null,
+  ]);
+
+  const acts = el('div', { class: 'row', style: 'margin-top:10px' });
+  if (isFile) {
+    if (ready) {
+      acts.append(el('span', { class: 'badge on', style: 'align-self:center' }, '✓ ' + t('readyBadge')));
+      acts.append(el('button', { class: 'btn ghost sm', onclick: () => scanDoc(r, app, reload, multi) }, t('redo')));
+    } else {
+      acts.append(el('button', { class: 'btn accent sm', onclick: () => scanDoc(r, app, reload, multi) }, '📷 ' + t('scan')));
+      const fi = el('input', { type: 'file', accept: 'image/*,.pdf', style: 'display:none' });
+      fi.addEventListener('change', () => handleDocFile(fi, r, app, reload));
+      acts.append(el('button', { class: 'btn ghost sm', onclick: () => fi.click() }, '📎 ' + t('uploadFile')), fi);
+    }
+  } else {
+    // date / text requirement
+    const inp = el('input', { type: r.input_type === 'date' ? 'date' : 'text', value: doc?.value_text || '', style: 'max-width:220px' });
+    acts.append(inp, el('button', {
+      class: 'btn sm', onclick: async () => {
+        if (!inp.value) return;
+        const { error } = await S.sb.from('application_documents').upsert(
+          { application_id: app.id, requirement_key: r.key, value_text: inp.value }, { onConflict: 'application_id,requirement_key' });
+        toast(error ? error.message : t('ok'), error ? 'err' : 'ok'); if (!error) reload();
+      },
+    }, t('save_text')));
+  }
+  body.append(acts);
+  return el('div', { class: 'panel', style: 'display:flex;gap:14px;align-items:flex-start' }, [num_el, body]);
+}
+
+async function uploadDoc(blob, ext, contentType, r, app, reload) {
+  const path = `${S.user.id}/${app.id}/${r.key}.${ext}`;
+  toast(S.lang === 'ar' ? 'جارٍ الرفع…' : 'Uploading…');
+  const { error: up } = await S.sb.storage.from('documents').upload(path, blob, { upsert: true, contentType });
+  if (up) return toast(up.message, 'err');
+  const { error } = await S.sb.from('application_documents').upsert(
+    { application_id: app.id, requirement_key: r.key, storage_path: path }, { onConflict: 'application_id,requirement_key' });
+  if (error) return toast(error.message, 'err');
+  toast(t('uploaded'), 'ok'); reload();
+}
+
+async function handleDocFile(fi, r, app, reload) {
+  const f = fi.files[0]; if (!f) return;
+  const chk = validateFile(f, r.validation || {}); if (!chk.ok) { fi.value = ''; return toast('⚠️ ' + chk.msg, 'err'); }
+  const ext = (f.name.split('.').pop() || 'jpg').toLowerCase();
+  await uploadDoc(f, ext, f.type, r, app, reload);
+}
+
+// دمج الصفحات الملتقطة في ملف PDF واحد
+function buildScanPdf(pages) {
+  const JsPDF = window.jspdf && window.jspdf.jsPDF;
+  const pdf = new JsPDF({ unit: 'pt', format: 'a4' });
+  const PW = pdf.internal.pageSize.getWidth(), PH = pdf.internal.pageSize.getHeight(), M = 18;
+  pages.forEach((p, i) => {
+    if (i) pdf.addPage();
+    const maxW = PW - M * 2, maxH = PH - M * 2;
+    let w = maxW, h = w * p.h / p.w;
+    if (h > maxH) { h = maxH; w = h * p.w / p.h; }
+    pdf.addImage(p.data, 'JPEG', (PW - w) / 2, (PH - h) / 2, w, h);
+  });
+  return pdf.output('blob');
+}
+
+/* ---------- 📷 camera document scanner (frame + lighting + multi-page → PDF) ---------- */
+async function scanDoc(r, app, reload, multi) {
+  if (!(window.jspdf && window.jspdf.jsPDF)) return toast(S.lang === 'ar' ? 'مكتبة PDF لم تُحمّل — استخدم رفع ملف.' : 'PDF lib not loaded.', 'err');
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+  } catch (e) { return toast(t('camFail'), 'err'); }
+
+  const root = $('#modalRoot');
+  const pages = [];
+  const video = el('video', { autoplay: '', muted: '' });
+  video.setAttribute('playsinline', ''); video.playsInline = true; video.muted = true; video.srcObject = stream;
+  const lite = el('div', { class: 'scan-lite' }, '…');
+  const thumbs = el('div', { class: 'scan-thumbs' });
+  const stage = el('div', { class: 'scan-stage' }, [
+    video,
+    el('div', { class: 'scan-frame' }, [el('span', { class: 'c1' }), el('span', { class: 'c2' }), el('span', { class: 'c3' }), el('span', { class: 'c4' })]),
+    lite,
+    el('div', { class: 'scan-hint' }, multi ? t('allPages') : t('alignHint')),
+    el('button', { class: 'scan-x', onclick: close }, '×'),
+  ]);
+  const shutter = el('button', { class: 'shutter', 'aria-label': t('capture'), onclick: capture });
+  const saveBtn = el('button', { class: 'btn accent', style: 'min-width:96px;visibility:hidden', onclick: finish }, t('saveDoc'));
+  const ctrl = el('div', { class: 'scan-ctrl' }, [
+    el('div', { style: 'flex:1;color:#93a0b5;font-size:13px' }, multi ? (S.lang === 'ar' ? 'صفحة صفحة' : 'page by page') : ''),
+    shutter,
+    el('div', { style: 'flex:1;text-align:end' }, saveBtn),
+  ]);
+  root.innerHTML = ''; root.append(el('div', { class: 'scanwrap' }, [stage, thumbs, ctrl]));
+  video.play().catch(() => {});
+
+  const lc = document.createElement('canvas'); lc.width = 48; lc.height = 36;
+  const lx = lc.getContext('2d');
+  const timer = setInterval(() => {
+    if (!video.videoWidth) return;
+    try {
+      lx.drawImage(video, 0, 0, 48, 36);
+      const d = lx.getImageData(0, 0, 48, 36).data; let s = 0;
+      for (let i = 0; i < d.length; i += 4) s += d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+      const good = s / (d.length / 4) >= 75;
+      lite.className = 'scan-lite ' + (good ? 'good' : 'low');
+      lite.textContent = good ? '💡 ' + t('lightGood') : '🔅 ' + t('lightLow');
+    } catch (_) {}
+  }, 500);
+
+  function capture() {
+    if (!video.videoWidth) return;
+    if (!multi) { pages.length = 0; thumbs.innerHTML = ''; }
+    const c = document.createElement('canvas'); c.width = video.videoWidth; c.height = video.videoHeight;
+    const x = c.getContext('2d');
+    x.filter = 'contrast(1.12) saturate(1.05) brightness(1.03)';
+    x.drawImage(video, 0, 0, c.width, c.height);
+    const data = c.toDataURL('image/jpeg', 0.82);
+    pages.push({ data, w: c.width, h: c.height });
+    thumbs.append(el('div', { class: 'th' }, [el('img', { src: data }), el('div', { class: 'pg' }, String(pages.length))]));
+    thumbs.scrollLeft = thumbs.scrollWidth;
+    saveBtn.style.visibility = 'visible';
+  }
+  async function finish() {
+    if (!pages.length) return;
+    const list = pages.slice(); cleanup();
+    toast(t('building'));
+    try { await uploadDoc(buildScanPdf(list), 'pdf', 'application/pdf', r, app, reload); }
+    catch (e) { toast(String(e), 'err'); }
+  }
+  function cleanup() { clearInterval(timer); stream.getTracks().forEach(tr => tr.stop()); root.innerHTML = ''; }
+  function close() { cleanup(); }
 }
 
 /* ---------- ✨ AI photo enhancement (photo-passport function) ---------- */

@@ -217,6 +217,29 @@
     .msg.u{align-self:flex-start;background:var(--brand);color:#fff;border-end-start-radius:5px}
     .msg.a{align-self:flex-end;background:var(--surface);color:var(--ink);border-end-end-radius:5px;box-shadow:var(--sh-sm)}
     .chat-foot{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:var(--surface)}
+
+    /* ---------- document scanner ---------- */
+    .scanwrap{position:fixed;inset:0;z-index:95;background:#0b0e13;display:flex;flex-direction:column}
+    .scan-stage{position:relative;flex:1;overflow:hidden;background:#000}
+    .scan-stage video{width:100%;height:100%;object-fit:cover}
+    .scan-frame{position:absolute;inset:9% 6%;border:2px dashed rgba(255,255,255,.75);border-radius:16px;pointer-events:none}
+    .scan-frame span{position:absolute;width:26px;height:26px;border:3px solid #fff}
+    .scan-frame .c1{inset-block-start:-3px;inset-inline-start:-3px;border-inline-end:0;border-block-end:0;border-radius:14px 0 0 0}
+    .scan-frame .c2{inset-block-start:-3px;inset-inline-end:-3px;border-inline-start:0;border-block-end:0;border-radius:0 14px 0 0}
+    .scan-frame .c3{inset-block-end:-3px;inset-inline-start:-3px;border-inline-end:0;border-block-start:0;border-radius:0 0 0 14px}
+    .scan-frame .c4{inset-block-end:-3px;inset-inline-end:-3px;border-inline-start:0;border-block-start:0;border-radius:0 0 14px 0}
+    .scan-lite{position:absolute;inset-block-start:14px;inset-inline-start:14px;padding:8px 14px;border-radius:20px;font-weight:800;font-size:13.5px;color:#fff;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
+    .scan-lite.good{background:rgba(18,184,134,.9)} .scan-lite.low{background:rgba(217,138,18,.92)}
+    .scan-x{position:absolute;inset-block-start:14px;inset-inline-end:14px;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:20px}
+    .scan-hint{position:absolute;inset-block-end:14px;inset-inline:0;text-align:center;color:#fff;font-size:14px;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+    .scan-thumbs{display:flex;gap:8px;padding:10px 12px;overflow-x:auto;background:#11151c;min-height:0}
+    .scan-thumbs:empty{display:none}
+    .scan-thumbs .th{position:relative;flex:0 0 auto}
+    .scan-thumbs img{height:56px;border-radius:8px;border:1px solid #2a3340}
+    .scan-thumbs .pg{position:absolute;inset-block-start:-6px;inset-inline-start:-6px;background:var(--brand);color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:800;display:grid;place-items:center}
+    .scan-ctrl{padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:#11151c;display:flex;gap:12px;align-items:center;justify-content:space-between}
+    .shutter{width:70px;height:70px;border-radius:50%;background:#fff;border:5px solid rgba(255,255,255,.35);flex:0 0 70px;margin:0 auto}
+    .shutter:active{transform:scale(.94)}
   </style>
 </head>
 <body>
@@ -249,6 +272,7 @@
   <div id="toast"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="./config.js"></script>
   <script src="./app.js"></script>
 </body>
