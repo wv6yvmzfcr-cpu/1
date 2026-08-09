@@ -113,7 +113,8 @@ const RESOURCES = {
       // المرحلة الثانية: خطاب القبول والرسوم وتقدّم التأشيرة
       f('final_price_myr', 'number', { half: true, hint: 'الإجمالي النهائي بالرنقت (يظهر للطالب)' }),
       f('offer_issued_at', 'date', { half: true, hint: 'تاريخ إصدار خطاب القبول' }),
-      f('final_fees', 'json', { hint: '[{"label":{"ar":"رسوم الفيزا","en":"Visa fee"},"amount":2900}]' }),
+      f('final_fees', 'json', { hint: 'رسوم التأشيرة (تُدفع للمعهد) — [{"label":{"ar":"رسوم تقديم التأشيرة","en":"Visa fee"},"amount":2900}]' }),
+      f('pay_url', 'text', { hint: 'رابط دفع المعهد (اختياري) — يظهر للطالب المحتاج تأشيرة' }),
       f('emgs_progress', 'number', { half: true, hint: 'تقدّم EMGS 0..100 — عند 70 نبلغ الطالب بالتنسيق' }),
       f('arrival_date', 'date', { half: true }),
       f('flight_number', 'text', { half: true }),

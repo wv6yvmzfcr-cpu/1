@@ -18,10 +18,11 @@
 --   requirements، ولا يظهران في معالج المستندات (المرحلة الأولى).
 -- =====================================================================
 
--- ١) عمود نسبة تقدّم EMGS -------------------------------------------------
+-- ١) عمود نسبة تقدّم EMGS + رابط دفع المعهد (اختياري) --------------------
 alter table public.applications
   add column if not exists emgs_progress smallint not null default 0
-    check (emgs_progress between 0 and 100);
+    check (emgs_progress between 0 and 100),
+  add column if not exists pay_url text;   -- رابط دفع المعهد (رسوم التأشيرة) — يضعه المدير
 
 -- ٢) حماية emgs_progress من تعديل الطالب (يظل بصلاحية الإدارة/الخادم) -----
 create or replace function public.guard_application_update()
@@ -51,6 +52,7 @@ begin
   new.final_fees       := old.final_fees;
   new.offer_issued_at  := old.offer_issued_at;
   new.emgs_progress    := old.emgs_progress;   -- 🆕 تقدّم التأشيرة بيد الإدارة
+  new.pay_url          := old.pay_url;          -- 🆕 رابط دفع المعهد بيد الإدارة
 
   new.updated_at := now();
   return new;
@@ -61,37 +63,37 @@ create trigger guard_application_update_trg
   before update on public.applications
   for each row execute function public.guard_application_update();
 
--- ٣) إعداد الدفع (يعدّله المدير لاحقاً من لوحة التحكم) --------------------
+-- ٣) إعداد الدفع (رسوم التأشيرة تُدفع للمعهد — المنصّة لا تستقبل أموالاً) --
+-- مهم: الدفع للمعهد مباشرةً، وفقط للطالب الذي تستدعي مدة دراسته تأشيرة
+-- (Student Pass عبر EMGS). الطالب المُعفى (≤ 90 يوماً) لا يدفع رسوم تأشيرة.
 insert into public.app_config (key, value) values
 ('payment', '{
-  "note": {
-    "ar": "بعد التحويل، ارفق صورة إيصال الدفع في الأسفل لنبدأ إجراءات تأشيرتك مباشرةً.",
-    "en": "After transferring, attach your payment receipt below so we start your visa procedures right away."
+  "disclaimer": {
+    "ar": "المنصّة لا تستقبل أي مبالغ ولا تتحمّل مسؤوليتها. رسوم تقديم التأشيرة تُدفع للمعهد مباشرةً، وذلك فقط إن كانت مدة دراستك تتطلّب تأشيرة (Student Pass). للدورات القصيرة المُعفاة لا توجد رسوم تأشيرة.",
+    "en": "The platform collects no money and holds no funds. The visa application fee is paid directly to the institute, and only if your study duration requires a Student Pass. Visa-exempt short courses have no visa fee."
   },
-  "methods": [
-    {
-      "type": "bank",
-      "title": {"ar": "تحويل بنكي", "en": "Bank transfer"},
-      "bank_name": "Maybank Malaysia",
-      "account_name": "EduLink Sdn Bhd",
-      "account_number": "5140xxxxxxxx",
-      "iban": "",
-      "swift": "MBBEMYKL",
-      "note": {"ar": "اكتب رقم طلبك في خانة الملاحظات عند التحويل.", "en": "Put your application ID in the transfer note."}
-    },
-    {
-      "type": "institute_site",
-      "title": {"ar": "الدفع عبر موقع المعهد", "en": "Pay via institute website"},
-      "url": "",
-      "steps": [
-        {"ar": "افتح رابط الدفع الخاص بالمعهد أعلاه.", "en": "Open the institute payment link above."},
-        {"ar": "أدخل رقم خطاب القبول ومبلغ الرسوم كما هو موضّح.", "en": "Enter your offer letter number and the fee amount as shown."},
-        {"ar": "أكمل الدفع، ثم احفظ الإيصال وارفعه في الأسفل.", "en": "Complete payment, then save the receipt and upload it below."}
-      ]
-    }
+  "note": {
+    "ar": "ادفع رسوم التأشيرة للمعهد حسب التعليمات في خطاب القبول، ثم ارفق الإيصال في الأسفل لنستكمل إجراءات تأشيرتك. أي استفسار تواصل معنا عبر واتساب.",
+    "en": "Pay the visa fee to the institute per the offer letter, then attach the receipt below so we continue your visa procedures. Any question — reach us on WhatsApp."
+  },
+  "steps": [
+    {"ar": "افتح خطاب القبول واطّلع على مبلغ رسوم التأشيرة وطريقة دفعها للمعهد.", "en": "Open the offer letter and review the visa fee and how to pay the institute."},
+    {"ar": "ادفع للمعهد مباشرةً (عبر رابط الدفع إن وُجد، أو حسب تعليمات الخطاب).", "en": "Pay the institute directly (via the payment link if provided, or per the letter)."},
+    {"ar": "احفظ الإيصال وارفعه في الأسفل لنبدأ إجراءات تأشيرتك.", "en": "Save the receipt and upload it below so we start your visa procedures."}
   ]
 }')
 on conflict (key) do update set value = excluded.value;
+
+-- ٣-ب) توضيح نصوص مرحلتَي القبول والدفع على الموقع ----------------------
+update public.pipeline_steps set
+  explanation = '{"ar":"مبروك! وصل خطاب القبول (Offer Letter). حمّله وراجع تفاصيله. إن كانت مدة دراستك تتطلّب تأشيرة (أكثر من 90 يوماً) ستجد رسوم تقديم التأشيرة تُدفع للمعهد. أما الدورات القصيرة المُعفاة فلا رسوم تأشيرة عليها.","en":"Congrats! Your offer letter arrived. Download and review it. If your duration needs a visa (over 90 days) you will find the visa fee paid to the institute. Visa-exempt short courses have no visa fee.","ms":"Tahniah! Surat tawaran anda telah tiba. Muat turun dan semak."}',
+  your_action = '{"ar":"حمّل خطاب القبول. إن طُلبت رسوم تأشيرة، ادفعها للمعهد وارفق الإيصال.","en":"Download the offer letter. If a visa fee is due, pay the institute and attach the receipt.","ms":"Muat turun surat tawaran."}'
+where status = 'offer';
+
+update public.pipeline_steps set
+  explanation = '{"ar":"هذه المرحلة تخصّ الطلاب الذين تتطلّب مدة دراستهم تأشيرة فقط. رسوم تقديم التأشيرة تُدفع للمعهد مباشرةً — المنصّة لا تستقبل أي مبالغ. أرفق إيصال الدفع لنستكمل إجراءات التأشيرة، وغالباً ننسّق باقي التفاصيل عبر واتساب.","en":"This stage applies only to students whose duration requires a visa. The visa fee is paid directly to the institute — the platform collects nothing. Upload the receipt so we continue, and we usually coordinate the rest on WhatsApp.","ms":"Peringkat ini untuk pelajar yang memerlukan visa sahaja. Yuran dibayar terus ke institut."}',
+  your_action = '{"ar":"ادفع رسوم التأشيرة للمعهد حسب خطاب القبول، ثم ارفع صورة الإيصال.","en":"Pay the institute the visa fee per the offer letter, then upload the receipt.","ms":"Bayar yuran visa kepada institut, kemudian muat naik resit."}'
+where status = 'payment';
 
 -- ٤) سياسات تخزين للمدير: يرفع خطاب القبول في مجلد الطالب ليحمّله ------
 -- سياسات الطالب تحصره في مجلده (foldername[1]=uid). المدير يحتاج كتابة

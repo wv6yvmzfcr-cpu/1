@@ -69,20 +69,21 @@ const T = {
     underReviewTitle: 'مستنداتك قيد المراجعة',
     underReviewBody: 'استلمنا مستنداتك ونراجعها ونقدّمها للمعهد. سنعود لك بخطاب القبول وتفاصيل الرسوم قريباً — تابع هنا وسنشعرك عبر واتساب.',
     offerTitle: 'مبروك — تم قبولك! 🎉',
-    offerBody: 'صدر خطاب قبولك من المعهد. حمّله من الأسفل، ثم اطّلع على الرسوم وطريقة الدفع لنكمل إجراءات تأشيرتك.',
+    offerBody: 'صدر خطاب قبولك من المعهد. حمّله من الأسفل واحتفظ به.',
     downloadOffer: 'تحميل خطاب القبول (PDF)',
     offerPending: 'خطاب القبول قيد التجهيز وسيظهر هنا للتحميل قريباً.',
-    feesTitle: 'تفاصيل الرسوم',
-    totalDue: 'الإجمالي المستحق',
-    feesNote: 'الرسوم كما وردت في خطاب القبول. أي استفسار تواصل مع الدعم عبر واتساب.',
-    payTitle: 'طريقة الدفع',
-    payVia: 'ادفع بإحدى الطريقتين',
-    bankName: 'البنك', accountName: 'اسم الحساب', accountNo: 'رقم الحساب', ibanLbl: 'الآيبان', swiftLbl: 'السويفت',
-    openPayLink: 'فتح رابط الدفع',
+    exemptTitle: 'لا رسوم تأشيرة عليك 🟢',
+    exemptBody: 'مدة دراستك ضمن الإعفاء (حتى 90 يوماً)، فلا تحتاج تأشيرة مسبقة ولا رسوم. نستكمل معك باقي الإجراءات، والتواصل غالباً عبر واتساب.',
+    feesTitle: 'رسوم تقديم التأشيرة',
+    paidToInstitute: 'تُدفع للمعهد مباشرةً',
+    totalDue: 'المبلغ المستحق للمعهد',
+    feesNote: 'الرسوم كما وردت في خطاب القبول. المنصّة لا تستقبل أي مبالغ — الدفع للمعهد مباشرةً.',
+    payTitle: 'طريقة الدفع (للمعهد)',
+    openPayLink: 'رابط الدفع للمعهد',
     receiptTitle: 'إيصال الدفع',
-    receiptHint: 'بعد الدفع، صوّر الإيصال أو ارفعه هنا لنبدأ إجراءات التأشيرة.',
-    receiptDone: 'استلمنا إيصالك ✓ — نتحقق منه الآن وسنبدأ إجراءات تأشيرتك.',
-    paymentReviewBody: 'نتحقق من دفعتك الآن. فور تأكيدها نبدأ إجراءات تأشيرتك عبر EMGS ونعلمك بالتقدّم.',
+    receiptHint: 'بعد الدفع للمعهد، صوّر الإيصال أو ارفعه هنا لنبدأ إجراءات التأشيرة.',
+    receiptDone: 'استلمنا إيصالك ✓ — نتحقق منه ونبدأ إجراءات تأشيرتك.',
+    paymentReviewBody: 'نتحقق من دفعتك للمعهد الآن. فور تأكيدها نبدأ إجراءات تأشيرتك عبر EMGS ونعلمك بالتقدّم.',
     visaTitle: 'إجراءات التأشيرة (EMGS)',
     visaBody: 'بدأنا إجراءات تأشيرتك عبر EMGS. تابع نسبة التقدّم هنا — لا يلزمك أي إجراء الآن.',
     emgsProgressLbl: 'تقدّم معاملة EMGS',
@@ -138,20 +139,21 @@ const T = {
     underReviewTitle: 'Your documents are under review',
     underReviewBody: 'We received your documents, we are reviewing them and submitting to the institute. We will return with your offer letter and fee details soon — track here and we will notify you on WhatsApp.',
     offerTitle: 'Congratulations — you are accepted! 🎉',
-    offerBody: 'Your offer letter has been issued. Download it below, then review the fees and how to pay so we can continue your visa procedures.',
+    offerBody: 'Your offer letter has been issued. Download and keep it below.',
     downloadOffer: 'Download offer letter (PDF)',
     offerPending: 'Your offer letter is being prepared and will appear here to download soon.',
-    feesTitle: 'Fee breakdown',
-    totalDue: 'Total due',
-    feesNote: 'Fees as stated in your offer letter. Any question — reach support on WhatsApp.',
-    payTitle: 'How to pay',
-    payVia: 'Pay via one of these',
-    bankName: 'Bank', accountName: 'Account name', accountNo: 'Account number', ibanLbl: 'IBAN', swiftLbl: 'SWIFT',
-    openPayLink: 'Open payment link',
+    exemptTitle: 'No visa fee for you 🟢',
+    exemptBody: 'Your duration is visa-exempt (up to 90 days) — no advance visa and no fee. We continue the rest with you, usually via WhatsApp.',
+    feesTitle: 'Visa application fee',
+    paidToInstitute: 'Paid directly to the institute',
+    totalDue: 'Amount due to the institute',
+    feesNote: 'Fees as stated in your offer letter. The platform collects no money — you pay the institute directly.',
+    payTitle: 'How to pay (the institute)',
+    openPayLink: 'Institute payment link',
     receiptTitle: 'Payment receipt',
-    receiptHint: 'After paying, scan or upload the receipt here so we start your visa procedures.',
+    receiptHint: 'After paying the institute, scan or upload the receipt here so we start your visa procedures.',
     receiptDone: 'Receipt received ✓ — we are verifying it and will start your visa procedures.',
-    paymentReviewBody: 'We are verifying your payment. Once confirmed we start your EMGS visa procedures and keep you posted.',
+    paymentReviewBody: 'We are verifying your payment to the institute. Once confirmed we start your EMGS visa procedures and keep you posted.',
     visaTitle: 'Visa procedures (EMGS)',
     visaBody: 'We have started your EMGS visa procedures. Track the progress here — no action needed from you now.',
     emgsProgressLbl: 'EMGS application progress',
@@ -842,12 +844,13 @@ function stageCard(app, docMap, cfg, steps, reasonMap, reload) {
   return box;
 }
 
-// خطاب القبول + الرسوم + طريقة الدفع + رفع الإيصال
+// خطاب القبول + (للطلاب المحتاجين تأشيرة) رسوم المعهد ورفع الإيصال
 function offerPanel(app, docMap, cfg, reload) {
   const offerDoc = docMap['offer_letter'];
   const receipt = docMap['payment_receipt'];
   const fees = Array.isArray(app.final_fees) ? app.final_fees : [];
   const pay = cfg['payment'] || {};
+  const needsVisa = !visaPath(app.weeks).short;   // >90 يوماً = تحتاج تأشيرة = رسوم للمعهد
   const box = el('div');
 
   // بطاقة القبول + تحميل الخطاب
@@ -862,7 +865,28 @@ function offerPanel(app, docMap, cfg, reload) {
       : el('div', { class: 'action', style: 'margin-top:16px;text-align:center' }, t('offerPending')),
   ]));
 
-  // تفاصيل الرسوم
+  // الطالب المُعفى (دورة قصيرة ≤ 90 يوماً): لا رسوم ولا دفع — نستكمل عبر واتساب
+  if (!needsVisa) {
+    box.append(el('div', { class: 'panel', style: 'border:1px solid var(--ok)' }, [
+      el('div', { style: 'display:flex;gap:12px;align-items:flex-start' }, [
+        el('div', { style: 'font-size:30px' }, '🟢'),
+        el('div', {}, [
+          el('b', { style: 'font-size:16px' }, t('exemptTitle')),
+          el('p', { class: 'muted', style: 'margin:.4em 0 0;line-height:1.7' }, t('exemptBody')),
+        ]),
+      ]),
+      supportNumber() ? el('button', { class: 'btn accent block', style: 'margin-top:14px', onclick: () => window.contactSupport() }, '🟢 ' + t('supportBtn')) : null,
+    ]));
+    return box;
+  }
+
+  // تنبيه: الدفع للمعهد والمنصّة لا تستقبل أموالاً
+  if (pay.disclaimer) box.append(el('div', { class: 'action', style: 'display:flex;gap:10px;align-items:flex-start' }, [
+    el('div', { style: 'font-size:20px' }, '🛈'),
+    el('p', { style: 'margin:0;line-height:1.7' }, pick(pay.disclaimer)),
+  ]));
+
+  // رسوم تقديم التأشيرة (تُدفع للمعهد)
   if (fees.length || app.final_price_myr != null) {
     const rows = el('div');
     fees.forEach(fe => rows.append(el('div', { style: 'display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)' }, [
@@ -870,7 +894,10 @@ function offerPanel(app, docMap, cfg, reload) {
       el('b', { html: money(fe.amount) }),
     ])));
     box.append(el('div', { class: 'panel' }, [
-      el('h3', { style: 'margin-top:0' }, '🧾 ' + t('feesTitle')),
+      el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px' }, [
+        el('h3', { style: 'margin:0' }, '🧾 ' + t('feesTitle')),
+        el('span', { class: 'badge info', style: 'font-size:12px' }, '🏛️ ' + t('paidToInstitute')),
+      ]),
       rows,
       app.final_price_myr != null ? el('div', { style: 'display:flex;justify-content:space-between;gap:12px;padding:12px 0 0;font-size:17px' }, [
         el('b', {}, t('totalDue')),
@@ -880,34 +907,15 @@ function offerPanel(app, docMap, cfg, reload) {
     ]));
   }
 
-  // طريقة الدفع
-  const methods = Array.isArray(pay.methods) ? pay.methods : [];
-  if (methods.length) {
+  // طريقة الدفع للمعهد (خطوات + رابط المعهد إن وُجد)
+  {
+    const steps = Array.isArray(pay.steps) ? pay.steps : [];
     const mp = el('div', { class: 'panel' }, [
       el('h3', { style: 'margin-top:0' }, '💳 ' + t('payTitle')),
       pay.note ? el('p', { class: 'muted', style: 'margin:.2em 0 12px' }, pick(pay.note)) : null,
     ]);
-    methods.forEach(m => {
-      if (m.type === 'bank') {
-        const line = (lbl, val) => val ? el('div', { style: 'display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--line)' }, [
-          el('span', { class: 'muted' }, lbl), el('b', { style: 'user-select:all' }, val)]) : null;
-        mp.append(el('div', { class: 'action', style: 'margin-bottom:12px' }, [
-          el('b', {}, '🏦 ' + (pick(m.title) || t('bankName'))),
-          el('div', { style: 'margin-top:8px' }, [
-            line(t('bankName'), m.bank_name), line(t('accountName'), m.account_name),
-            line(t('accountNo'), m.account_number), line(t('ibanLbl'), m.iban), line(t('swiftLbl'), m.swift),
-          ]),
-          m.note ? el('div', { class: 'muted', style: 'font-size:12.5px;margin-top:8px' }, 'ℹ️ ' + pick(m.note)) : null,
-        ]));
-      } else if (m.type === 'institute_site') {
-        mp.append(el('div', { class: 'action', style: 'margin-bottom:12px' }, [
-          el('b', {}, '🌐 ' + (pick(m.title) || '')),
-          Array.isArray(m.steps) ? el('ol', { style: 'margin:8px 0 0;padding-inline-start:20px;line-height:1.9' },
-            m.steps.map(s => el('li', {}, pick(s)))) : null,
-          m.url ? el('a', { class: 'btn ghost sm', style: 'margin-top:10px', href: m.url, target: '_blank', rel: 'noopener' }, '🔗 ' + t('openPayLink')) : null,
-        ]));
-      }
-    });
+    if (steps.length) mp.append(el('ol', { style: 'margin:0;padding-inline-start:20px;line-height:1.95' }, steps.map(s => el('li', {}, pick(s)))));
+    if (app.pay_url) mp.append(el('a', { class: 'btn accent block', style: 'margin-top:14px', href: app.pay_url, target: '_blank', rel: 'noopener' }, '🔗 ' + t('openPayLink')));
     box.append(mp);
   }
 
