@@ -92,6 +92,12 @@ async function doLogin() {
   msg.className = 'msg';
   if (!url || !key || !email || !pass) { msg.className = 'msg err'; msg.textContent = 'أكمل كل الحقول.'; return; }
 
+  if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+    msg.className = 'msg err';
+    msg.textContent = 'تعذّر تحميل مكتبة الاتصال. تأكّد من الإنترنت ثم أعد تحميل الصفحة (اسحب للأسفل للتحديث).';
+    msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
   $('#btn-login').disabled = true;
   $('#btn-login').textContent = 'جارٍ الدخول…';
   try {
@@ -110,6 +116,7 @@ async function doLogin() {
   } catch (e) {
     msg.className = 'msg err';
     msg.textContent = e.message || 'فشل تسجيل الدخول.';
+    msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
   } finally {
     $('#btn-login').disabled = false;
     $('#btn-login').textContent = 'تسجيل الدخول';
