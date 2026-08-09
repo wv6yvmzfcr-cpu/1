@@ -16,7 +16,7 @@ const el = (t, p = {}, k = []) => {
   return n;
 };
 const $ = s => document.querySelector(s);
-const mount = node => { const a = $('#app'); a.innerHTML = ''; a.append(node); window.scrollTo(0, 0); };
+const mount = node => { const a = $('#app'); a.innerHTML = ''; a.append(node); window.scrollTo(0, 0); if (typeof applyReveal === 'function') applyReveal(); };
 const spinner = () => { $('#app').innerHTML = '<div class="spin"></div>'; };
 
 /* ---------- state ---------- */
@@ -253,8 +253,37 @@ async function init() {
   });
 
   renderHeader();
+  uiChrome();
   window.addEventListener('hashchange', route);
   route();
+}
+
+/* ---------- premium chrome: header shadow, footer year, scroll-reveal ---------- */
+const _revIO = ('IntersectionObserver' in window)
+  ? new IntersectionObserver((ents, o) => ents.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); o.unobserve(e.target); }
+    }), { rootMargin: '0px 0px -6% 0px', threshold: 0.05 })
+  : null;
+function applyReveal() {
+  if (!_revIO) return;
+  let i = 0;
+  $('#app').querySelectorAll('.hero, .panel, .card, .sec-title').forEach(n => {
+    if (n.dataset.rev) return;
+    n.dataset.rev = '1';
+    n.classList.add('reveal');
+    n.style.transitionDelay = Math.min(i++ * 28, 170) + 'ms';
+    _revIO.observe(n);
+  });
+}
+function uiChrome() {
+  const hdr = document.getElementById('siteHeader');
+  if (hdr) {
+    const onScroll = () => hdr.classList.toggle('scrolled', window.scrollY > 6);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+  const fy = document.getElementById('fyear');
+  if (fy) fy.textContent = new Date().getFullYear();
 }
 
 async function loadProfile() {
