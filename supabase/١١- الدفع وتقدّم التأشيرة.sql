@@ -24,6 +24,10 @@ alter table public.applications
     check (emgs_progress between 0 and 100),
   add column if not exists pay_url text;   -- رابط دفع المعهد (رسوم التأشيرة) — يضعه المدير
 
+-- رقم تواصل إضافي (اختياري) يضيفه الطالب بنفسه ليُتواصل معه عليه أيضاً
+alter table public.profiles
+  add column if not exists alt_phone text;
+
 -- ٢) حماية emgs_progress من تعديل الطالب (يظل بصلاحية الإدارة/الخادم) -----
 create or replace function public.guard_application_update()
 returns trigger language plpgsql security definer set search_path = public as $$
@@ -91,7 +95,7 @@ update public.pipeline_steps set
 where status = 'offer';
 
 update public.pipeline_steps set
-  explanation = '{"ar":"هذه المرحلة تخصّ الطلاب الذين تتطلّب مدة دراستهم تأشيرة فقط. رسوم تقديم التأشيرة تُدفع للمعهد مباشرةً — المنصّة لا تستقبل أي مبالغ. أرفق إيصال الدفع لنستكمل إجراءات التأشيرة، وغالباً ننسّق باقي التفاصيل عبر واتساب.","en":"This stage applies only to students whose duration requires a visa. The visa fee is paid directly to the institute — the platform collects nothing. Upload the receipt so we continue, and we usually coordinate the rest on WhatsApp.","ms":"Peringkat ini untuk pelajar yang memerlukan visa sahaja. Yuran dibayar terus ke institut."}',
+  explanation = '{"ar":"هذه المرحلة تخصّ الطلاب الذين تتطلّب مدة دراستهم تأشيرة فقط. رسوم تقديم التأشيرة تُدفع للمعهد مباشرةً — المنصّة لا تستقبل أي مبالغ. أرفق إيصال الدفع لنستكمل إجراءات التأشيرة، وسيتم التواصل معك عبر واتساب لتنسيق باقي التفاصيل.","en":"This stage applies only to students whose duration requires a visa. The visa fee is paid directly to the institute — the platform collects nothing. Upload the receipt so we continue, and you will be contacted on WhatsApp to coordinate the rest.","ms":"Peringkat ini untuk pelajar yang memerlukan visa sahaja. Yuran dibayar terus ke institut."}',
   your_action = '{"ar":"ادفع رسوم التأشيرة للمعهد حسب خطاب القبول، ثم ارفع صورة الإيصال.","en":"Pay the institute the visa fee per the offer letter, then upload the receipt.","ms":"Bayar yuran visa kepada institut, kemudian muat naik resit."}'
 where status = 'payment';
 

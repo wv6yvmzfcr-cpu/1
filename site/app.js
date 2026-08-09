@@ -73,7 +73,7 @@ const T = {
     downloadOffer: 'تحميل خطاب القبول (PDF)',
     offerPending: 'خطاب القبول قيد التجهيز وسيظهر هنا للتحميل قريباً.',
     exemptTitle: 'لا رسوم تأشيرة عليك 🟢',
-    exemptBody: 'مدة دراستك ضمن الإعفاء (حتى 90 يوماً)، فلا تحتاج تأشيرة مسبقة ولا رسوم. نستكمل معك باقي الإجراءات، والتواصل غالباً عبر واتساب.',
+    exemptBody: 'مدة دراستك ضمن الإعفاء (حتى 90 يوماً)، فلا تحتاج تأشيرة مسبقة ولا رسوم. نستكمل معك باقي الإجراءات، وسيتم التواصل معك عبر واتساب.',
     feesTitle: 'رسوم تقديم التأشيرة',
     paidToInstitute: 'تُدفع للمعهد مباشرةً',
     totalDue: 'المبلغ المستحق للمعهد',
@@ -97,6 +97,11 @@ const T = {
     housingHelp: 'المساعدة في السكن',
     housingHelpBody: 'نرشّح لك خيارات سكن قريبة من معهدك ونساعدك في الحجز.',
     browseHousing: 'تصفّح خيارات السكن',
+    contactVia: 'سيتم التواصل معك عبر واتساب على رقمك.',
+    addAltNumber: 'أضف رقماً آخر للتواصل',
+    altNumberPlaceholder: 'رقم إضافي للتواصل (اختياري)',
+    altSaved: 'حفظنا رقمك الإضافي ✓',
+    altPhoneLabel: 'رقم تواصل إضافي (اختياري)',
   },
   en: {
     institutes: 'Institutes', housing: 'Housing', login: 'Log in', logout: 'Log out', myApps: 'My applications',
@@ -143,7 +148,7 @@ const T = {
     downloadOffer: 'Download offer letter (PDF)',
     offerPending: 'Your offer letter is being prepared and will appear here to download soon.',
     exemptTitle: 'No visa fee for you 🟢',
-    exemptBody: 'Your duration is visa-exempt (up to 90 days) — no advance visa and no fee. We continue the rest with you, usually via WhatsApp.',
+    exemptBody: 'Your duration is visa-exempt (up to 90 days) — no advance visa and no fee. We continue the rest with you, and you will be contacted on WhatsApp.',
     feesTitle: 'Visa application fee',
     paidToInstitute: 'Paid directly to the institute',
     totalDue: 'Amount due to the institute',
@@ -167,6 +172,11 @@ const T = {
     housingHelp: 'Housing help',
     housingHelpBody: 'We suggest housing options near your institute and help you book.',
     browseHousing: 'Browse housing options',
+    contactVia: 'You will be contacted on WhatsApp at your number.',
+    addAltNumber: 'Add another contact number',
+    altNumberPlaceholder: 'Additional contact number (optional)',
+    altSaved: 'Your extra number is saved ✓',
+    altPhoneLabel: 'Additional contact number (optional)',
   },
 };
 const t = k => (T[S.lang] && T[S.lang][k]) || T.ar[k] || k;
@@ -718,6 +728,7 @@ function validateFile(file, v) {
 async function viewTracker(id) {
   if (!S.user) { openAuth('#/app/' + id); return; }
   spinner();
+  if (!S.profile) await loadProfile();
   const [{ data: app }, { data: steps }, { data: reasons }, { data: cfgRows }, { data: faqs }] = await Promise.all([
     S.sb.from('applications').select('*, institutes(name,city,id)').eq('id', id).maybeSingle(),
     S.sb.from('pipeline_steps').select('*').order('step_order'),
@@ -799,6 +810,29 @@ async function openDoc(path) {
   window.open(data.signedUrl, '_blank', 'noopener');
 }
 
+// عنصر «سيتم التواصل معك واتساب» + إتاحة إضافة رقم آخر اختياري
+function altContact() {
+  const wrap = el('div', { style: 'margin-top:12px' });
+  wrap.append(el('div', { class: 'muted', style: 'font-size:13.5px' }, '🟢 ' + t('contactVia')));
+  const inp = el('input', { type: 'tel', dir: 'ltr', value: (S.profile && S.profile.alt_phone) || '', placeholder: t('altNumberPlaceholder'), style: 'max-width:260px' });
+  const saveBtn = el('button', { class: 'btn ghost sm', style: 'margin-inline-start:8px' }, t('save'));
+  saveBtn.onclick = async () => {
+    saveBtn.disabled = true;
+    const val = inp.value.trim();
+    const { error } = await S.sb.from('profiles').update({ alt_phone: val || null }).eq('id', S.user.id);
+    saveBtn.disabled = false;
+    if (error) return toast(error.message, 'err');
+    if (S.profile) S.profile.alt_phone = val;
+    toast(t('altSaved'), 'ok');
+  };
+  const form = el('div', { style: 'display:none;margin-top:8px' }, el('div', { class: 'row', style: 'align-items:center' }, [inp, saveBtn]));
+  const toggle = el('button', { class: 'btn ghost sm', style: 'margin-top:8px' },
+    '➕ ' + t('addAltNumber'));
+  toggle.onclick = () => { form.style.display = form.style.display === 'none' ? 'block' : 'none'; };
+  wrap.append(toggle, form);
+  return wrap;
+}
+
 /* ============ المرحلة الثانية: بطاقة المرحلة المركّزة ============ */
 function stageCard(app, docMap, cfg, steps, reasonMap, reload) {
   const box = el('div');
@@ -875,6 +909,7 @@ function offerPanel(app, docMap, cfg, reload) {
           el('p', { class: 'muted', style: 'margin:.4em 0 0;line-height:1.7' }, t('exemptBody')),
         ]),
       ]),
+      altContact(),
       supportNumber() ? el('button', { class: 'btn accent block', style: 'margin-top:14px', onclick: () => window.contactSupport() }, '🟢 ' + t('supportBtn')) : null,
     ]));
     return box;
@@ -980,6 +1015,7 @@ function coordPanel(app, inline) {
     el('b', { style: 'font-size:16px' }, t('coordTitle')),
     el('p', { class: 'muted', style: 'margin:.4em 0 0;line-height:1.7' }, t('coordBody')),
     list,
+    altContact(),
     el('button', { class: 'btn ghost sm', style: 'margin-top:12px', onclick: () => go('#/housing') }, '🏠 ' + t('browseHousing')),
   ]);
 }
@@ -1342,6 +1378,7 @@ async function viewProfile() {
   const p = S.profile || {};
   const name = el('input', { value: p.full_name || '' });
   const phone = el('input', { value: p.phone || '' });
+  const altPhone = el('input', { type: 'tel', dir: 'ltr', value: p.alt_phone || '' });
   const country = el('input', { value: p.country || '' });
   const wrap = el('div');
   wrap.append(el('h1', { class: 'page' }, t('profile')));
@@ -1349,13 +1386,15 @@ async function viewProfile() {
     el('label', {}, t('fullName')), name,
     el('label', {}, '🟢 ' + t('whatsapp')), phone,
     el('div', { class: 'muted', style: 'font-size:13px' }, t('whatsappHint')),
+    el('label', {}, t('altPhoneLabel')), altPhone,
     el('label', {}, t('country')), country,
     el('div', { class: 'muted', style: 'margin-top:10px' }, S.user.email),
     el('button', {
       class: 'btn block', style: 'margin-top:18px',
       onclick: async () => {
         const { error } = await S.sb.from('profiles').update(
-          { full_name: name.value, phone: phone.value, country: country.value }).eq('id', S.user.id);
+          { full_name: name.value, phone: phone.value, alt_phone: altPhone.value.trim() || null, country: country.value }).eq('id', S.user.id);
+        if (!error && S.profile) S.profile.alt_phone = altPhone.value.trim();
         toast(error ? error.message : t('ok'), error ? 'err' : 'ok');
       },
     }, t('save')),

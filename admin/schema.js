@@ -386,7 +386,8 @@ const RESOURCES = {
     readOnly: true,
     columns: [
       { key: 'full_name', label: 'الاسم' },
-      { key: 'phone', label: 'الهاتف' },
+      { key: 'phone', label: 'واتساب' },
+      { key: 'alt_phone', label: 'رقم إضافي' },
       { key: 'country', label: 'الدولة' },
       { key: 'preferred_lang', label: 'اللغة' },
       { key: 'created_at', type: 'date', label: 'انضم' },
