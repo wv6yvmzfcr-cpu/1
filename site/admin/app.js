@@ -72,10 +72,13 @@ async function tryRestore() {
 }
 
 async function verifyAdmin() {
-  // المسار الأساسي: دالة am_i_admin() (من ملف ٨)
-  const { data, error } = await state.sb.rpc('am_i_admin');
-  if (!error && typeof data === 'boolean') return data;
-  // احتياطي: قراءة مباشرة من admin_users
+  // المسار الأساسي: دالة is_admin() (security definer — تتجاوز RLS)
+  let r = await state.sb.rpc('is_admin');
+  if (!r.error && typeof r.data === 'boolean') return r.data;
+  // توافق قديم: am_i_admin() إن وُجدت
+  r = await state.sb.rpc('am_i_admin');
+  if (!r.error && typeof r.data === 'boolean') return r.data;
+  // احتياطي أخير: قراءة مباشرة من admin_users (قد يحجبها RLS)
   const { data: rows } = await state.sb.from('admin_users').select('user_id').eq('user_id', state.user.id).maybeSingle();
   return !!rows;
 }
@@ -874,5 +877,15 @@ $('#btn-new').onclick = () => openEditor(null);
 $('#btn-menu').onclick = () => $('#aside').classList.toggle('open');
 let searchT;
 $('#search').addEventListener('input', e => { clearTimeout(searchT); searchT = setTimeout(() => { state.search = e.target.value.trim(); state.page = 0; loadList(); }, 350); });
+
+// تعبئة رابط المشروع والمفتاح العام تلقائياً من config.js (نفس مشروع الموقع)
+// حتى لا يحتاج المدير سوى إدخال البريد وكلمة المرور.
+(function prefillFromConfig() {
+  const c = window.EDULINK_CONFIG;
+  if (!c) return;
+  const u = $('#in-url'), k = $('#in-key');
+  if (u && !u.value && c.url) u.value = c.url;
+  if (k && !k.value && c.anonKey) k.value = c.anonKey;
+})();
 
 tryRestore();
