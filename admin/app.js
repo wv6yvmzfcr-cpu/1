@@ -601,6 +601,47 @@ async function openAppDetail(app) {
     })(),
   ]));
 
+  // خطاب القبول: يرفعه المدير في مجلد الطالب فيحمّله الطالب من صفحة المتابعة
+  {
+    const offer = (docs || []).find(d => d.requirement_key === 'offer_letter');
+    const fld = el('div', { class: 'panel', style: 'margin:8px 0 4px;padding:12px 14px' }, [
+      el('div', { style: 'display:flex;align-items:center;gap:10px;flex-wrap:wrap' }, [
+        el('b', { text: '📄 خطاب القبول (offer_letter)' }),
+        offer ? el('span', { class: 'badge on', text: 'مرفوع' }) : el('span', { class: 'badge warn', text: 'غير مرفوع' }),
+        el('span', { class: 'spacer', style: 'flex:1' }),
+        offer && offer.storage_path ? el('button', {
+          class: 'btn ghost sm', text: 'عرض',
+          onclick: async () => {
+            const { data, error } = await state.sb.storage.from('documents').createSignedUrl(offer.storage_path, 3600);
+            if (error) return toast('تعذّر الفتح: ' + error.message, 'err');
+            window.open(data.signedUrl, '_blank');
+          },
+        }) : null,
+      ]),
+      el('div', { class: 'muted', style: 'font-size:12.5px;margin-top:6px', text: 'PDF يُوضّح القبول والرسوم. يظهر للطالب في مرحلة «القبول» ليحمّله.' }),
+      (() => {
+        const fi = el('input', { type: 'file', accept: '.pdf,image/*', style: 'display:none' });
+        fi.onchange = async () => {
+          const f = fi.files[0]; if (!f) return;
+          const ext = (f.name.split('.').pop() || 'pdf').toLowerCase();
+          const path = `${app.user_id}/${app.id}/offer_letter.${ext}`;
+          toast('جارٍ رفع خطاب القبول…');
+          const { error: up } = await state.sb.storage.from('documents').upload(path, f, { upsert: true, contentType: f.type || 'application/pdf' });
+          if (up) return toast('تعذّر الرفع: ' + up.message, 'err');
+          const { error } = await state.sb.from('application_documents').upsert(
+            { application_id: app.id, requirement_key: 'offer_letter', storage_path: path, status: 'approved', reviewed_at: new Date().toISOString() },
+            { onConflict: 'application_id,requirement_key' });
+          toast(error ? error.message : 'تم رفع خطاب القبول', error ? 'err' : 'ok');
+          if (!error) openAppDetailReload(app, overlay);
+        };
+        return el('div', { style: 'margin-top:10px' }, [
+          el('button', { class: 'btn sm', text: offer ? 'استبدال الخطاب' : 'رفع خطاب القبول', onclick: () => fi.click() }, fi),
+        ]);
+      })(),
+    ]);
+    body.append(fld);
+  }
+
   // documents
   body.append(el('h3', { text: 'المستندات', style: 'margin:18px 0 8px;font-size:15px' }));
   if (!docs?.length) body.append(el('div', { class: 'muted', text: 'لا مستندات مرفوعة.' }));

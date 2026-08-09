@@ -64,6 +64,44 @@ const T = {
     camFail: 'تعذّر فتح الكاميرا — استخدم «رفع ملف».', pageWord: 'صفحة',
     whatsapp: 'رقم واتساب', whatsappHint: 'نرسل لك تحديثات طلبك على واتساب، ومنه تتواصل مع الدعم.',
     supportBtn: 'تواصل مع الدعم (واتساب)', humanSupport: 'أو كلّم موظفاً عبر واتساب',
+    // المرحلة الثانية — القبول والدفع والتأشيرة
+    stageOf: 'المرحلة', ofWord: 'من',
+    underReviewTitle: 'مستنداتك قيد المراجعة',
+    underReviewBody: 'استلمنا مستنداتك ونراجعها ونقدّمها للمعهد. سنعود لك بخطاب القبول وتفاصيل الرسوم قريباً — تابع هنا وسنشعرك عبر واتساب.',
+    offerTitle: 'مبروك — تم قبولك! 🎉',
+    offerBody: 'صدر خطاب قبولك من المعهد. حمّله من الأسفل واحتفظ به.',
+    downloadOffer: 'تحميل خطاب القبول (PDF)',
+    offerPending: 'خطاب القبول قيد التجهيز وسيظهر هنا للتحميل قريباً.',
+    exemptTitle: 'لا رسوم تأشيرة عليك 🟢',
+    exemptBody: 'مدة دراستك ضمن الإعفاء (حتى 90 يوماً)، فلا تحتاج تأشيرة مسبقة ولا رسوم. نستكمل معك باقي الإجراءات، وسيتم التواصل معك عبر واتساب.',
+    feesTitle: 'رسوم تقديم التأشيرة',
+    paidToInstitute: 'تُدفع للمعهد مباشرةً',
+    totalDue: 'المبلغ المستحق للمعهد',
+    feesNote: 'الرسوم كما وردت في خطاب القبول. المنصّة لا تستقبل أي مبالغ — الدفع للمعهد مباشرةً.',
+    payTitle: 'طريقة الدفع (للمعهد)',
+    openPayLink: 'رابط الدفع للمعهد',
+    receiptTitle: 'إيصال الدفع',
+    receiptHint: 'بعد الدفع للمعهد، صوّر الإيصال أو ارفعه هنا لنبدأ إجراءات التأشيرة.',
+    receiptDone: 'استلمنا إيصالك ✓ — نتحقق منه ونبدأ إجراءات تأشيرتك.',
+    paymentReviewBody: 'نتحقق من دفعتك للمعهد الآن. فور تأكيدها نبدأ إجراءات تأشيرتك عبر EMGS ونعلمك بالتقدّم.',
+    visaTitle: 'إجراءات التأشيرة (EMGS)',
+    visaBody: 'بدأنا إجراءات تأشيرتك عبر EMGS. تابع نسبة التقدّم هنا — لا يلزمك أي إجراء الآن.',
+    emgsProgressLbl: 'تقدّم معاملة EMGS',
+    coordTitle: 'ننسّق معك الخطوات الأخيرة 🤝',
+    coordBody: 'وصلت معاملتك إلى 70٪ أو أكثر. سنتواصل معك قريباً لتنسيق: التأشيرة الإلكترونية (e-Visa)، استقبال المطار، والمساعدة في السكن.',
+    ticketTitle: 'الوصول والخطوات الأخيرة',
+    ticketBody: 'اقتربت رحلتك! ننسّق معك الآن التأشيرة الإلكترونية واستقبال المطار والسكن. أكمل بيانات سفرك أدناه لنساعدك بدقّة.',
+    completedTitle: 'رحلتك بدأت — بالتوفيق! 🎓',
+    completedBody: 'اكتملت كل الإجراءات. نتمنى لك دراسة موفقة في ماليزيا — الدعم معك في أي وقت عبر واتساب.',
+    rejectedTitle: 'طلبك يحتاج مراجعة',
+    housingHelp: 'المساعدة في السكن',
+    housingHelpBody: 'نرشّح لك خيارات سكن قريبة من معهدك ونساعدك في الحجز.',
+    browseHousing: 'تصفّح خيارات السكن',
+    contactVia: 'سيتم التواصل معك عبر واتساب على رقمك.',
+    addAltNumber: 'أضف رقماً آخر للتواصل',
+    altNumberPlaceholder: 'رقم إضافي للتواصل (اختياري)',
+    altSaved: 'حفظنا رقمك الإضافي ✓',
+    altPhoneLabel: 'رقم تواصل إضافي (اختياري)',
   },
   en: {
     institutes: 'Institutes', housing: 'Housing', login: 'Log in', logout: 'Log out', myApps: 'My applications',
@@ -101,6 +139,44 @@ const T = {
     camFail: 'Camera unavailable — use Upload.', pageWord: 'page',
     whatsapp: 'WhatsApp number', whatsappHint: 'We send application updates on WhatsApp, and you reach support from it.',
     supportBtn: 'Contact support (WhatsApp)', humanSupport: 'Or chat with a human on WhatsApp',
+    // Stage two — acceptance, payment, visa
+    stageOf: 'Stage', ofWord: 'of',
+    underReviewTitle: 'Your documents are under review',
+    underReviewBody: 'We received your documents, we are reviewing them and submitting to the institute. We will return with your offer letter and fee details soon — track here and we will notify you on WhatsApp.',
+    offerTitle: 'Congratulations — you are accepted! 🎉',
+    offerBody: 'Your offer letter has been issued. Download and keep it below.',
+    downloadOffer: 'Download offer letter (PDF)',
+    offerPending: 'Your offer letter is being prepared and will appear here to download soon.',
+    exemptTitle: 'No visa fee for you 🟢',
+    exemptBody: 'Your duration is visa-exempt (up to 90 days) — no advance visa and no fee. We continue the rest with you, and you will be contacted on WhatsApp.',
+    feesTitle: 'Visa application fee',
+    paidToInstitute: 'Paid directly to the institute',
+    totalDue: 'Amount due to the institute',
+    feesNote: 'Fees as stated in your offer letter. The platform collects no money — you pay the institute directly.',
+    payTitle: 'How to pay (the institute)',
+    openPayLink: 'Institute payment link',
+    receiptTitle: 'Payment receipt',
+    receiptHint: 'After paying the institute, scan or upload the receipt here so we start your visa procedures.',
+    receiptDone: 'Receipt received ✓ — we are verifying it and will start your visa procedures.',
+    paymentReviewBody: 'We are verifying your payment to the institute. Once confirmed we start your EMGS visa procedures and keep you posted.',
+    visaTitle: 'Visa procedures (EMGS)',
+    visaBody: 'We have started your EMGS visa procedures. Track the progress here — no action needed from you now.',
+    emgsProgressLbl: 'EMGS application progress',
+    coordTitle: 'We coordinate the final steps with you 🤝',
+    coordBody: 'Your application reached 70% or more. We will contact you shortly to coordinate: the e-Visa, airport pickup, and housing help.',
+    ticketTitle: 'Arrival & final steps',
+    ticketBody: 'Your trip is close! We are coordinating your e-Visa, airport pickup and housing. Complete your travel details below so we help you precisely.',
+    completedTitle: 'Your journey has begun — good luck! 🎓',
+    completedBody: 'All procedures are complete. We wish you a successful stay in Malaysia — support is with you anytime on WhatsApp.',
+    rejectedTitle: 'Your application needs attention',
+    housingHelp: 'Housing help',
+    housingHelpBody: 'We suggest housing options near your institute and help you book.',
+    browseHousing: 'Browse housing options',
+    contactVia: 'You will be contacted on WhatsApp at your number.',
+    addAltNumber: 'Add another contact number',
+    altNumberPlaceholder: 'Additional contact number (optional)',
+    altSaved: 'Your extra number is saved ✓',
+    altPhoneLabel: 'Additional contact number (optional)',
   },
 };
 const t = k => (T[S.lang] && T[S.lang][k]) || T.ar[k] || k;
@@ -652,6 +728,7 @@ function validateFile(file, v) {
 async function viewTracker(id) {
   if (!S.user) { openAuth('#/app/' + id); return; }
   spinner();
+  if (!S.profile) await loadProfile();
   const [{ data: app }, { data: steps }, { data: reasons }, { data: cfgRows }, { data: faqs }] = await Promise.all([
     S.sb.from('applications').select('*, institutes(name,city,id)').eq('id', id).maybeSingle(),
     S.sb.from('pipeline_steps').select('*').order('step_order'),
@@ -682,75 +759,33 @@ async function viewTracker(id) {
     supportNumber() ? el('button', { class: 'btn accent sm', onclick: () => window.contactSupport() }, '🟢 ' + t('supportBtn')) : null,
   ]));
 
-  // progress summary
-  const required = (reqs || []).filter(r => r.is_required !== false);
-  const approved = required.filter(r => docMap[r.key]?.status === 'approved').length;
-  const pct = required.length ? Math.round(approved / required.length * 100) : 0;
-  wrap.append(el('div', { class: 'panel' }, [
-    el('div', { style: 'display:flex;justify-content:space-between;margin-bottom:8px' }, [
-      el('b', {}, (S.lang === 'ar' ? 'اكتمال المستندات' : 'Documents complete')),
-      el('span', { class: 'muted' }, `${approved}/${required.length}`),
-    ]),
-    el('div', { style: 'height:10px;background:var(--chip);border-radius:20px;overflow:hidden' },
-      el('div', { style: `height:100%;width:${pct}%;background:var(--accent);transition:width .4s` })),
-  ]));
-
-  // stepper
-  const stepBox = el('div', { class: 'steps panel' });
-  (steps || []).forEach(s => {
-    const idx = STEP_ORDER.indexOf(s.status);
-    const cls = app.status === 'rejected' ? '' : idx < curIdx ? 'done' : idx === curIdx ? 'now' : '';
-    stepBox.append(el('div', { class: 'step ' + cls }, [
-      el('div', { class: 'dot' }, idx < curIdx ? '✓' : (s.step_order)),
-      el('div', { class: 'st-body' }, [
-        el('h4', {}, pick(s.title)),
-        s.eta_days ? el('div', { class: 'muted', style: 'font-size:12.5px' }, '⏱ ' + t('usually') + ' ~' + s.eta_days + ' ' + t('daysUnit')) : null,
-        idx === curIdx ? el('p', { class: 'muted', style: 'margin:.2em 0' }, pick(s.explanation)) : null,
-        idx === curIdx ? el('div', { class: 'action' }, [el('b', {}, t('yourAction') + ': '), pick(s.your_action)]) : null,
+  // شريط تقدّم مضغوط: «المرحلة X من N — العنوان»
+  if (app.status !== 'rejected') {
+    const total = STEP_ORDER.length;
+    const stepNo = curIdx + 1;
+    const curStep = (steps || []).find(s => s.status === app.status);
+    const barPct = Math.round(stepNo / total * 100);
+    wrap.append(el('div', { class: 'panel' }, [
+      el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:10px;flex-wrap:wrap' }, [
+        el('b', { style: 'font-size:15px' }, `${t('stageOf')} ${stepNo} ${t('ofWord')} ${total}${curStep ? ' — ' + pick(curStep.title) : ''}`),
+        el('span', { class: 'muted', style: 'font-size:13px' }, barPct + (S.lang === 'ar' ? '٪' : '%')),
       ]),
+      el('div', { style: 'height:10px;background:var(--surface-2);border-radius:20px;overflow:hidden' },
+        el('div', { style: `height:100%;width:${barPct}%;background:var(--accent);transition:width .4s` })),
     ]));
-  });
-  wrap.append(stepBox);
+  }
 
-  // visa path (by course length) + estimated time to visa
-  const vp = visaPath(app.weeks);
-  const eta = etaToVisa(steps || []);
-  wrap.append(el('div', { class: 'panel' }, [
-    el('h3', { style: 'margin-top:0' }, '🛂 ' + t('visaPathT')),
-    el('div', { class: 'action' }, [
-      el('b', {}, (vp.short ? '🟢 ' : '🛂 ') + vp.title),
-      el('p', { style: 'margin:.4em 0 0' }, vp.body),
-    ]),
-    (!vp.short && eta > 0) ? el('div', { style: 'margin-top:12px;display:flex;gap:12px;align-items:center' }, [
-      el('div', { style: 'font-size:28px' }, '⏱'),
-      el('div', {}, [
-        el('div', { class: 'muted', style: 'font-size:13.5px' }, t('totalEta')),
-        el('div', { style: 'font-size:20px;font-weight:800;color:var(--brand)' }, daysLabel(eta)),
-      ]),
-    ]) : null,
-    el('div', { class: 'muted', style: 'font-size:12.5px;margin-top:8px' }, 'ℹ️ ' + t('estimateNote')),
-  ]));
+  // بطاقة المرحلة الحالية — محتوى مركّز بلا حشو
+  wrap.append(stageCard(app, docMap, cfg, steps || [], reasonMap, reload));
 
-  // requirements + upload
-  const reqPanel = el('div', { class: 'panel' }, el('h3', { style: 'margin-top:0' }, t('requirements')));
-  (reqs || []).forEach(r => reqPanel.append(docRow(r, docMap[r.key], reasonMap, app, reload)));
-  wrap.append(reqPanel);
-
-  // visa (EMGS) + travel + MDAC
-  wrap.append(travelPanel(app, steps || [], cfg, reload));
-
-  // contextual FAQ
-  const rel = (faqs || []).filter(f => (f.context_tags || []).includes(app.status));
-  const showFaq = (rel.length ? rel : (faqs || []).slice(0, 3)).slice(0, 5);
-  if (showFaq.length) {
+  // أسئلة سياقية مختصرة (لمرحلة الطلب الحالية فقط)
+  const rel = (faqs || []).filter(f => (f.context_tags || []).includes(app.status)).slice(0, 4);
+  if (rel.length) {
     const fp = el('div', { class: 'panel' }, el('h3', { style: 'margin-top:0' }, (S.lang === 'ar' ? 'أسئلة قد تهمّك' : 'Helpful answers')));
-    showFaq.forEach(f => {
-      const det = el('details', { style: 'border-bottom:1px solid var(--line);padding:8px 0' }, [
-        el('summary', { style: 'cursor:pointer;font-weight:600' }, pick(f.question)),
-        el('p', { class: 'muted', style: 'margin:.5em 0 0' }, pick(f.answer)),
-      ]);
-      fp.append(det);
-    });
+    rel.forEach(f => fp.append(el('details', { style: 'border-bottom:1px solid var(--line);padding:8px 0' }, [
+      el('summary', { style: 'cursor:pointer;font-weight:600' }, pick(f.question)),
+      el('p', { class: 'muted', style: 'margin:.5em 0 0' }, pick(f.answer)),
+    ])));
     wrap.append(fp);
   }
 
@@ -764,6 +799,225 @@ async function viewTracker(id) {
     wrap.append(tl);
   }
   mount(wrap);
+}
+
+/* ---------- signed download for a stored document ---------- */
+async function openDoc(path) {
+  if (!path) return;
+  toast(S.lang === 'ar' ? 'جارٍ الفتح…' : 'Opening…');
+  const { data, error } = await S.sb.storage.from('documents').createSignedUrl(path, 300);
+  if (error || !data?.signedUrl) return toast(error?.message || 'error', 'err');
+  window.open(data.signedUrl, '_blank', 'noopener');
+}
+
+// عنصر «سيتم التواصل معك واتساب» + إتاحة إضافة رقم آخر اختياري
+function altContact() {
+  const wrap = el('div', { style: 'margin-top:12px' });
+  wrap.append(el('div', { class: 'muted', style: 'font-size:13.5px' }, '🟢 ' + t('contactVia')));
+  const inp = el('input', { type: 'tel', dir: 'ltr', value: (S.profile && S.profile.alt_phone) || '', placeholder: t('altNumberPlaceholder'), style: 'max-width:260px' });
+  const saveBtn = el('button', { class: 'btn ghost sm', style: 'margin-inline-start:8px' }, t('save'));
+  saveBtn.onclick = async () => {
+    saveBtn.disabled = true;
+    const val = inp.value.trim();
+    const { error } = await S.sb.from('profiles').update({ alt_phone: val || null }).eq('id', S.user.id);
+    saveBtn.disabled = false;
+    if (error) return toast(error.message, 'err');
+    if (S.profile) S.profile.alt_phone = val;
+    toast(t('altSaved'), 'ok');
+  };
+  const form = el('div', { style: 'display:none;margin-top:8px' }, el('div', { class: 'row', style: 'align-items:center' }, [inp, saveBtn]));
+  const toggle = el('button', { class: 'btn ghost sm', style: 'margin-top:8px' },
+    '➕ ' + t('addAltNumber'));
+  toggle.onclick = () => { form.style.display = form.style.display === 'none' ? 'block' : 'none'; };
+  wrap.append(toggle, form);
+  return wrap;
+}
+
+/* ============ المرحلة الثانية: بطاقة المرحلة المركّزة ============ */
+function stageCard(app, docMap, cfg, steps, reasonMap, reload) {
+  const box = el('div');
+  const st = app.status;
+
+  const msg = (emoji, title, body, extra) => el('div', { class: 'panel center', style: 'padding:26px 22px' }, [
+    el('div', { style: 'font-size:52px;line-height:1' }, emoji),
+    el('h2', { style: 'margin:.3em 0;font-weight:900' }, title),
+    el('p', { class: 'muted', style: 'max-width:480px;margin:0 auto;line-height:1.7' }, body),
+    extra || null,
+  ]);
+
+  if (st === 'rejected') {
+    box.append(msg('⚠️', t('rejectedTitle'),
+      app.notes || (S.lang === 'ar' ? 'نحتاج لمراجعة طلبك معك. تواصل مع الدعم لنكمل.' : 'We need to review your application with you. Contact support to continue.'),
+      supportNumber() ? el('button', { class: 'btn accent', style: 'margin-top:16px', onclick: () => window.contactSupport() }, '🟢 ' + t('supportBtn')) : null));
+    return box;
+  }
+  if (st === 'review' || st === 'submitted') {
+    box.append(msg('🔎', t('underReviewTitle'), t('underReviewBody')));
+    return box;
+  }
+  if (st === 'offer' || st === 'payment') {
+    box.append(offerPanel(app, docMap, cfg, reload));
+    return box;
+  }
+  if (st === 'visa') {
+    box.append(visaProgressPanel(app));
+    box.append(travelPanel(app, steps, cfg, reload));
+    return box;
+  }
+  if (st === 'ticket') {
+    box.append(msg('🎟️', t('ticketTitle'), t('ticketBody')));
+    box.append(coordPanel(app));
+    box.append(travelPanel(app, steps, cfg, reload));
+    return box;
+  }
+  if (st === 'completed') {
+    box.append(msg('🎓', t('completedTitle'), t('completedBody'),
+      el('button', { class: 'btn', style: 'margin-top:16px', onclick: () => go('#/housing') }, '🏠 ' + t('browseHousing'))));
+    return box;
+  }
+  return box;
+}
+
+// خطاب القبول + (للطلاب المحتاجين تأشيرة) رسوم المعهد ورفع الإيصال
+function offerPanel(app, docMap, cfg, reload) {
+  const offerDoc = docMap['offer_letter'];
+  const receipt = docMap['payment_receipt'];
+  const fees = Array.isArray(app.final_fees) ? app.final_fees : [];
+  const pay = cfg['payment'] || {};
+  const needsVisa = !visaPath(app.weeks).short;   // >90 يوماً = تحتاج تأشيرة = رسوم للمعهد
+  const box = el('div');
+
+  // بطاقة القبول + تحميل الخطاب
+  box.append(el('div', { class: 'panel' }, [
+    el('div', { style: 'text-align:center' }, [
+      el('div', { style: 'font-size:46px;line-height:1' }, '🎉'),
+      el('h2', { style: 'margin:.25em 0;font-weight:900' }, t('offerTitle')),
+      el('p', { class: 'muted', style: 'max-width:480px;margin:0 auto;line-height:1.7' }, t('offerBody')),
+    ]),
+    (offerDoc && offerDoc.storage_path)
+      ? el('button', { class: 'btn accent block', style: 'margin-top:16px', onclick: () => openDoc(offerDoc.storage_path) }, '⬇️ ' + t('downloadOffer'))
+      : el('div', { class: 'action', style: 'margin-top:16px;text-align:center' }, t('offerPending')),
+  ]));
+
+  // الطالب المُعفى (دورة قصيرة ≤ 90 يوماً): لا رسوم ولا دفع — نستكمل عبر واتساب
+  if (!needsVisa) {
+    box.append(el('div', { class: 'panel', style: 'border:1px solid var(--ok)' }, [
+      el('div', { style: 'display:flex;gap:12px;align-items:flex-start' }, [
+        el('div', { style: 'font-size:30px' }, '🟢'),
+        el('div', {}, [
+          el('b', { style: 'font-size:16px' }, t('exemptTitle')),
+          el('p', { class: 'muted', style: 'margin:.4em 0 0;line-height:1.7' }, t('exemptBody')),
+        ]),
+      ]),
+      altContact(),
+      supportNumber() ? el('button', { class: 'btn accent block', style: 'margin-top:14px', onclick: () => window.contactSupport() }, '🟢 ' + t('supportBtn')) : null,
+    ]));
+    return box;
+  }
+
+  // تنبيه: الدفع للمعهد والمنصّة لا تستقبل أموالاً
+  if (pay.disclaimer) box.append(el('div', { class: 'action', style: 'display:flex;gap:10px;align-items:flex-start' }, [
+    el('div', { style: 'font-size:20px' }, '🛈'),
+    el('p', { style: 'margin:0;line-height:1.7' }, pick(pay.disclaimer)),
+  ]));
+
+  // رسوم تقديم التأشيرة (تُدفع للمعهد)
+  if (fees.length || app.final_price_myr != null) {
+    const rows = el('div');
+    fees.forEach(fe => rows.append(el('div', { style: 'display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)' }, [
+      el('span', {}, pick(fe.label)),
+      el('b', { html: money(fe.amount) }),
+    ])));
+    box.append(el('div', { class: 'panel' }, [
+      el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px' }, [
+        el('h3', { style: 'margin:0' }, '🧾 ' + t('feesTitle')),
+        el('span', { class: 'badge info', style: 'font-size:12px' }, '🏛️ ' + t('paidToInstitute')),
+      ]),
+      rows,
+      app.final_price_myr != null ? el('div', { style: 'display:flex;justify-content:space-between;gap:12px;padding:12px 0 0;font-size:17px' }, [
+        el('b', {}, t('totalDue')),
+        el('b', { style: 'color:var(--brand)', html: money(app.final_price_myr) }),
+      ]) : null,
+      el('div', { class: 'muted', style: 'font-size:12.5px;margin-top:8px' }, 'ℹ️ ' + t('feesNote')),
+    ]));
+  }
+
+  // طريقة الدفع للمعهد (خطوات + رابط المعهد إن وُجد)
+  {
+    const steps = Array.isArray(pay.steps) ? pay.steps : [];
+    const mp = el('div', { class: 'panel' }, [
+      el('h3', { style: 'margin-top:0' }, '💳 ' + t('payTitle')),
+      pay.note ? el('p', { class: 'muted', style: 'margin:.2em 0 12px' }, pick(pay.note)) : null,
+    ]);
+    if (steps.length) mp.append(el('ol', { style: 'margin:0;padding-inline-start:20px;line-height:1.95' }, steps.map(s => el('li', {}, pick(s)))));
+    if (app.pay_url) mp.append(el('a', { class: 'btn accent block', style: 'margin-top:14px', href: app.pay_url, target: '_blank', rel: 'noopener' }, '🔗 ' + t('openPayLink')));
+    box.append(mp);
+  }
+
+  // رفع إيصال الدفع
+  const rp = el('div', { class: 'panel' }, [
+    el('h3', { style: 'margin-top:0' }, '📤 ' + t('receiptTitle')),
+    (receipt && receipt.storage_path)
+      ? el('div', { class: 'action', style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' }, [
+          el('span', { class: 'badge on' }, '✓'),
+          el('span', {}, t('receiptDone')),
+          el('button', { class: 'btn ghost sm', onclick: () => openDoc(receipt.storage_path) }, '👁️'),
+          el('button', { class: 'btn ghost sm', onclick: () => scanDoc({ key: 'payment_receipt' }, app, reload, false) }, t('redo')),
+        ])
+      : el('div', {}, [
+          el('p', { class: 'muted', style: 'margin:.2em 0 12px' }, t('receiptHint')),
+          el('div', { class: 'row' }, [
+            el('button', { class: 'btn accent sm', onclick: () => scanDoc({ key: 'payment_receipt' }, app, reload, false) }, '📷 ' + t('scan')),
+            (() => { const fi = el('input', { type: 'file', accept: 'image/*,.pdf', style: 'display:none' });
+              fi.addEventListener('change', () => handleDocFile(fi, { key: 'payment_receipt', validation: { formats: ['pdf', 'jpg', 'jpeg', 'png'], max_mb: 10 } }, app, reload));
+              return el('span', {}, [el('button', { class: 'btn ghost sm', onclick: () => fi.click() }, '📎 ' + t('uploadFile')), fi]); })(),
+          ]),
+        ]),
+  ]);
+  box.append(rp);
+
+  if (app.status === 'payment' && !(receipt && receipt.storage_path)) {
+    box.append(el('div', { class: 'action', style: 'margin-top:2px' }, 'ℹ️ ' + t('paymentReviewBody')));
+  }
+  return box;
+}
+
+// شريط تقدّم معاملة EMGS + رسالة التنسيق عند 70%
+function visaProgressPanel(app) {
+  const p = Math.max(0, Math.min(100, app.emgs_progress || 0));
+  const box = el('div', { class: 'panel' }, [
+    el('h3', { style: 'margin-top:0' }, '🛂 ' + t('visaTitle')),
+    el('p', { class: 'muted', style: 'margin:.2em 0 14px' }, t('visaBody')),
+    el('div', { style: 'display:flex;justify-content:space-between;margin-bottom:6px' }, [
+      el('b', {}, t('emgsProgressLbl')),
+      el('b', { style: 'color:var(--brand)' }, p + (S.lang === 'ar' ? '٪' : '%')),
+    ]),
+    el('div', { style: 'height:14px;background:var(--surface-2);border-radius:20px;overflow:hidden' },
+      el('div', { style: `height:100%;width:${p}%;background:linear-gradient(90deg,var(--accent),var(--brand));transition:width .5s` })),
+  ]);
+  if (p >= 70) box.append(coordPanel(app, true));
+  return box;
+}
+
+// بطاقة التنسيق للخطوات الأخيرة (e-Visa / المطار / السكن)
+function coordPanel(app, inline) {
+  const items = [
+    ['🆔', S.lang === 'ar' ? 'التأشيرة الإلكترونية (e-Visa)' : 'e-Visa', S.lang === 'ar' ? 'نجهّزها لك ونرسلها فور صدورها.' : 'We prepare and send it once issued.'],
+    ['✈️', S.lang === 'ar' ? 'استقبال المطار' : 'Airport pickup', S.lang === 'ar' ? 'ننسّق استقبالك عند وصولك.' : 'We arrange your pickup on arrival.'],
+    ['🏠', t('housingHelp'), t('housingHelpBody')],
+  ];
+  const list = el('div', { style: 'margin-top:12px;display:grid;gap:10px' });
+  items.forEach(([ic, ttl, sub]) => list.append(el('div', { style: 'display:flex;gap:12px;align-items:flex-start' }, [
+    el('div', { style: 'font-size:24px;flex:0 0 auto' }, ic),
+    el('div', {}, [el('b', {}, ttl), el('div', { class: 'muted', style: 'font-size:13.5px' }, sub)]),
+  ])));
+  return el('div', { class: inline ? 'action' : 'panel', style: inline ? 'margin-top:14px' : '' }, [
+    el('b', { style: 'font-size:16px' }, t('coordTitle')),
+    el('p', { class: 'muted', style: 'margin:.4em 0 0;line-height:1.7' }, t('coordBody')),
+    list,
+    altContact(),
+    el('button', { class: 'btn ghost sm', style: 'margin-top:12px', onclick: () => go('#/housing') }, '🏠 ' + t('browseHousing')),
+  ]);
 }
 
 function docRow(r, doc, reasonMap, app, reload) {
@@ -1124,6 +1378,7 @@ async function viewProfile() {
   const p = S.profile || {};
   const name = el('input', { value: p.full_name || '' });
   const phone = el('input', { value: p.phone || '' });
+  const altPhone = el('input', { type: 'tel', dir: 'ltr', value: p.alt_phone || '' });
   const country = el('input', { value: p.country || '' });
   const wrap = el('div');
   wrap.append(el('h1', { class: 'page' }, t('profile')));
@@ -1131,13 +1386,15 @@ async function viewProfile() {
     el('label', {}, t('fullName')), name,
     el('label', {}, '🟢 ' + t('whatsapp')), phone,
     el('div', { class: 'muted', style: 'font-size:13px' }, t('whatsappHint')),
+    el('label', {}, t('altPhoneLabel')), altPhone,
     el('label', {}, t('country')), country,
     el('div', { class: 'muted', style: 'margin-top:10px' }, S.user.email),
     el('button', {
       class: 'btn block', style: 'margin-top:18px',
       onclick: async () => {
         const { error } = await S.sb.from('profiles').update(
-          { full_name: name.value, phone: phone.value, country: country.value }).eq('id', S.user.id);
+          { full_name: name.value, phone: phone.value, alt_phone: altPhone.value.trim() || null, country: country.value }).eq('id', S.user.id);
+        if (!error && S.profile) S.profile.alt_phone = altPhone.value.trim();
         toast(error ? error.message : t('ok'), error ? 'err' : 'ok');
       },
     }, t('save')),
