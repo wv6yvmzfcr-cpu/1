@@ -18,12 +18,8 @@ const el = (t, p = {}, k = []) => {
 const $ = s => document.querySelector(s);
 const mount = node => { const a = $('#app'); a.innerHTML = ''; a.append(node); window.scrollTo(0, 0); if (typeof applyReveal === 'function') applyReveal(); };
 const spinner = () => { $('#app').innerHTML = '<div class="spin"></div>'; };
-// transparent brand watermark for hero banners
-function heroMark() {
-  const im = el('img', { class: 'hero-mark', src: '/assets/logo.svg', alt: '' });
-  im.onerror = () => im.remove();
-  return im;
-}
+// hero banner brand mark (disabled until a final logo is set)
+function heroMark() { return null; }
 
 /* ---------- state ---------- */
 const S = {
@@ -1524,10 +1520,7 @@ function openAuth(redirect) {
     finally { submit.disabled = false; }
   };
 
-  const brand = el('img', { class: 'modal-logo', src: '/assets/logo.svg', alt: 'EduLink' });
-  brand.onerror = () => brand.remove();
   const modal = el('div', { class: 'modal' }, [
-    brand,
     el('h2', {}, 'إيدولينك'),
     el('div', { class: 'muted' }, t('loginNeeded')),
     el('div', { class: 'tabs' }, [tabLogin, tabReg]),
