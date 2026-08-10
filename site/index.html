@@ -92,7 +92,7 @@
     .nav{max-width:1180px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;gap:16px}
     .logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:20px;color:var(--ink);cursor:pointer;letter-spacing:-.3px}
     .logo .mark{width:38px;height:38px;border-radius:11px;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:19px;font-weight:900;box-shadow:0 4px 12px color-mix(in srgb,var(--brand) 32%,transparent);overflow:hidden}
-    .logo .mark:has(img){background:#fafafa;box-shadow:inset 0 0 0 1px var(--line),0 3px 10px rgba(16,40,64,.08);padding:2px}
+    .logo .mark:has(img){background:none;box-shadow:none;padding:0;width:42px;height:42px;border-radius:0}
     .logo .mark img{width:100%;height:100%;object-fit:contain}
     .logo .wordmark{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
     .logo img.brandfull{height:34px;width:auto;border-radius:0;box-shadow:none;background:none}
@@ -118,6 +118,9 @@
       background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);
       background-size:34px 34px;mask-image:radial-gradient(120% 90% at 85% 0%,#000,transparent 60%);-webkit-mask-image:radial-gradient(120% 90% at 85% 0%,#000,transparent 60%)}
     .hero .in{position:relative;z-index:1;max-width:640px}
+    /* subtle transparent brand watermark inside the banner */
+    .hero-mark{position:absolute;z-index:0;inset-inline-end:-30px;top:50%;transform:translateY(-50%);height:108%;width:auto;opacity:.085;filter:brightness(0) invert(1);pointer-events:none;user-select:none}
+    @media(max-width:819px){.hero-mark{height:auto;width:82%;inset-inline-end:-16%;top:auto;bottom:-10%;transform:none;opacity:.09}}
     .hero .kicker{font-weight:800;font-size:13.5px;letter-spacing:.2px;margin-bottom:14px;display:inline-flex;gap:7px;align-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);padding:6px 13px;border-radius:20px;backdrop-filter:blur(4px)}
     .hero h1{font-size:clamp(30px,5.2vw,48px);line-height:1.14;margin:.1em 0 .4em;font-weight:900;letter-spacing:-.6px;max-width:16ch;text-wrap:balance;text-shadow:0 1px 24px rgba(0,0,0,.12)}
     .hero p{font-size:clamp(16px,2.2vw,19px);opacity:.95;max-width:48ch;margin:0 0 26px;font-weight:500;line-height:1.7}
@@ -228,7 +231,7 @@
     footer .fwrap{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:18px 40px;align-items:center;justify-content:space-between}
     footer .fbrand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px;color:var(--ink)}
     footer .fbrand .mark{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:17px;overflow:hidden}
-    footer .fbrand .mark:has(img){background:#fafafa;box-shadow:inset 0 0 0 1px var(--line);padding:2px}
+    footer .fbrand .mark:has(img){background:none;box-shadow:none;padding:0}
     footer .fbrand .mark img{width:100%;height:100%;object-fit:contain}
     footer .ftag{font-size:13.5px;max-width:42ch;line-height:1.7}
     footer .fnote{width:100%;text-align:center;font-size:12.5px;color:color-mix(in srgb,var(--muted) 80%,transparent);border-top:1px solid var(--line);padding-top:16px;margin-top:4px}
@@ -281,7 +284,7 @@
   <header id="siteHeader">
     <div class="nav">
       <div class="logo" onclick="go('#/')" role="button" tabindex="0" aria-label="EduLink — الصفحة الرئيسية">
-        <span class="mark"><img src="/assets/logo.jpg" alt="" onerror="this.remove()">🎓</span>
+        <span class="mark"><img src="/assets/logo.png" alt="" onerror="this.remove()">🎓</span>
         <span class="wordmark">إيدولينك</span>
       </div>
       <div class="navlinks">
@@ -300,7 +303,7 @@
   <footer>
     <div class="fwrap">
       <div class="fbrand">
-        <span class="mark"><img src="/assets/logo.jpg" alt="" onerror="this.remove()">🎓</span>
+        <span class="mark"><img src="/assets/logo.png" alt="" onerror="this.remove()">🎓</span>
         <span>إيدولينك</span>
       </div>
       <div class="ftag">بوابة الطلاب العرب للدراسة في ماليزيا — معاهد معتمدة، أسعار واضحة، ومتابعة لطلبك خطوة بخطوة حتى الوصول.</div>
