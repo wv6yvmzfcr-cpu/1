@@ -1512,7 +1512,10 @@ function openAuth(redirect) {
     finally { submit.disabled = false; }
   };
 
+  const brand = el('img', { class: 'modal-logo', src: '/assets/edulink-full.jpg', alt: 'EduLink' });
+  brand.onerror = () => brand.remove();
   const modal = el('div', { class: 'modal' }, [
+    brand,
     el('h2', {}, 'إيدولينك'),
     el('div', { class: 'muted' }, t('loginNeeded')),
     el('div', { class: 'tabs' }, [tabLogin, tabReg]),
