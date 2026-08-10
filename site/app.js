@@ -18,6 +18,12 @@ const el = (t, p = {}, k = []) => {
 const $ = s => document.querySelector(s);
 const mount = node => { const a = $('#app'); a.innerHTML = ''; a.append(node); window.scrollTo(0, 0); if (typeof applyReveal === 'function') applyReveal(); };
 const spinner = () => { $('#app').innerHTML = '<div class="spin"></div>'; };
+// transparent brand watermark for hero banners
+function heroMark() {
+  const im = el('img', { class: 'hero-mark', src: '/assets/logo.png', alt: '' });
+  im.onerror = () => im.remove();
+  return im;
+}
 
 /* ---------- state ---------- */
 const S = {
@@ -370,17 +376,20 @@ async function viewHome() {
 
   const wrap = el('div');
   const stat = (b, s) => el('div', { class: 'st' }, [el('b', {}, b), el('span', {}, s)]);
-  wrap.append(el('div', { class: 'hero' }, el('div', { class: 'in' }, [
-    el('div', { class: 'kicker' }, '🇲🇾 ' + (S.lang === 'ar' ? 'دراسة معتمدة في ماليزيا' : 'Accredited study in Malaysia')),
-    el('h1', {}, t('heroTitle')),
-    el('p', {}, t('heroSub')),
-    el('button', { class: 'btn', onclick: () => document.getElementById('list').scrollIntoView({ behavior: 'smooth' }) }, t('browse') + ' ←'),
-    el('div', { class: 'hero-stats' }, [
-      stat(String(list.length), S.lang === 'ar' ? 'معهد معتمد' : 'institutes'),
-      stat('8', S.lang === 'ar' ? 'خطوات واضحة' : 'clear steps'),
-      stat('100%', S.lang === 'ar' ? 'متابعة لطلبك' : 'tracked'),
+  wrap.append(el('div', { class: 'hero' }, [
+    heroMark(),
+    el('div', { class: 'in' }, [
+      el('div', { class: 'kicker' }, '🇲🇾 ' + (S.lang === 'ar' ? 'دراسة معتمدة في ماليزيا' : 'Accredited study in Malaysia')),
+      el('h1', {}, t('heroTitle')),
+      el('p', {}, t('heroSub')),
+      el('button', { class: 'btn', onclick: () => document.getElementById('list').scrollIntoView({ behavior: 'smooth' }) }, t('browse') + ' ←'),
+      el('div', { class: 'hero-stats' }, [
+        stat(String(list.length), S.lang === 'ar' ? 'معهد معتمد' : 'institutes'),
+        stat('8', S.lang === 'ar' ? 'خطوات واضحة' : 'clear steps'),
+        stat('100%', S.lang === 'ar' ? 'متابعة لطلبك' : 'tracked'),
+      ]),
     ]),
-  ])));
+  ]));
   wrap.append(el('h2', { class: 'sec-title' }, t('institutes')));
 
   const state = { city: '', sort: 'low' };
@@ -622,9 +631,12 @@ async function viewHow() {
 
   const wrap = el('div');
   wrap.append(el('div', { class: 'hero' }, [
-    el('h1', {}, t('howTitle')),
-    el('p', {}, t('howSub')),
-    el('button', { class: 'btn', onclick: () => go('#/') }, t('startNow')),
+    heroMark(),
+    el('div', { class: 'in' }, [
+      el('h1', {}, t('howTitle')),
+      el('p', {}, t('howSub')),
+      el('button', { class: 'btn', onclick: () => go('#/') }, t('startNow')),
+    ]),
   ]));
 
   // interactive visa-path calculator (choose by week / month / year)
@@ -1512,7 +1524,7 @@ function openAuth(redirect) {
     finally { submit.disabled = false; }
   };
 
-  const brand = el('img', { class: 'modal-logo', src: '/assets/edulink-full.jpg', alt: 'EduLink' });
+  const brand = el('img', { class: 'modal-logo', src: '/assets/edulink-full.png', alt: 'EduLink' });
   brand.onerror = () => brand.remove();
   const modal = el('div', { class: 'modal' }, [
     brand,
